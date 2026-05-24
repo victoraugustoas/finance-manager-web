@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
-import { CardAccount } from '../../../components/CardAccount/CardAccount.tsx'
-import { useListAccounts } from '../hooks/useListAccounts.ts'
+import { CardAccount } from '../../../../components/CardAccount/CardAccount.tsx'
+import { useListAccounts } from '../../hooks/useListAccounts.ts'
 
 export function ListAccounts() {
   const { isLoading, accounts } = useListAccounts()

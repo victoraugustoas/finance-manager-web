@@ -5,13 +5,13 @@ import Typography from '@mui/material/Typography'
 import { ArrowDownToLine, Bus, ShoppingCart, Utensils } from 'lucide-react'
 import { CardIncomeOutgo } from '../../components/CardIncomeOutgo/CardIncomeOutgo.tsx'
 import { CardTotalBalance } from '../../components/CardTotalBalance/CardTotalBalance.tsx'
-import { CategoryBreakdown } from '../../components/CategoryBreakdown/CategoryBreakdown.tsx'
+import { CategoryBreakdown } from './components/CategoryBreakdown/CategoryBreakdown.tsx'
 import { ExpenseRow } from '../../components/ExpenseRow/ExpenseRow.tsx'
 import { IncomeRow } from '../../components/IncomeRow/IncomeRow.tsx'
 import { useTranslate } from '../../hooks/useTranslate.ts'
 import { BREAKDOWN, INCOME, OUTGO } from '../../mocks/data.ts'
 import { categoryColors } from '../../theme/pluma.ts'
-import { ListAccounts } from './components/ListAccounts.tsx'
+import { ListAccounts } from './components/ListAccounts/ListAccounts.tsx'
 
 export function DashboardPage() {
   const { t } = useTranslate('dashboard')
