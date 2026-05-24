@@ -1,5 +1,6 @@
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
+import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { useTotalBalance } from './hooks/useTotalBalance.ts'
 
@@ -11,7 +12,7 @@ function fmtMoney(n: number) {
 }
 
 export function CardTotalBalance() {
-  const { balance } = useTotalBalance()
+  const { balance, isLoading } = useTotalBalance()
 
   return (
     <Card>
@@ -20,20 +21,28 @@ export function CardTotalBalance() {
           saldo total
         </Typography>
 
-        <Typography
-          component="div"
-          sx={{
-            fontFamily: '"Fraunces", Georgia, serif',
-            fontWeight: 500,
-            fontSize: { xs: '2.625rem', sm: '3.5rem' },
-            lineHeight: 1.05,
-            letterSpacing: '-0.02em',
-            color: 'text.primary',
-            fontFeatureSettings: '"tnum" 1',
-          }}
-        >
-          {fmtMoney(balance)}
-        </Typography>
+        {isLoading ? (
+          <Skeleton
+            variant="text"
+            width="70%"
+            sx={{ fontSize: { xs: '2.625rem', sm: '3.5rem' }, bgcolor: '#ece5d6' }}
+          />
+        ) : (
+          <Typography
+            component="div"
+            sx={{
+              fontFamily: '"Fraunces", Georgia, serif',
+              fontWeight: 500,
+              fontSize: { xs: '2.625rem', sm: '3.5rem' },
+              lineHeight: 1.05,
+              letterSpacing: '-0.02em',
+              color: 'text.primary',
+              fontFeatureSettings: '"tnum" 1, "cv11" 1',
+            }}
+          >
+            {fmtMoney(balance)}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   )

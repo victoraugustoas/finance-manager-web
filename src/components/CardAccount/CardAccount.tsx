@@ -2,12 +2,13 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Divider from '@mui/material/Divider'
+import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useEstimatedBalance } from './hooks/useEstimatedBalance.ts'
 
-interface CardAccountProps {
+export interface CardAccountProps {
   id: string
   name: string
   balance: number
@@ -20,7 +21,6 @@ function fmtMoney(n: number) {
   })}`
 }
 
-// Mobile: card compacto (180px) para scroll horizontal
 function CardAccountMobile({ id, name, balance }: CardAccountProps) {
   const { estimatedBalance, isLoading } = useEstimatedBalance(id)
 
@@ -34,28 +34,23 @@ function CardAccountMobile({ id, name, balance }: CardAccountProps) {
       }}
     >
       <CardContent sx={{ p: '16px !important' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.25 }}>
-          {/*<Box sx={{ color: 'text.secondary', display: 'flex' }}>*/}
-          {/*  <TypeIcon type={type} size={iconSize.mobile} />*/}
-          {/*</Box>*/}
-          <Typography
-            sx={{
-              fontSize: '0.75rem',
-              fontWeight: 500,
-              color: 'text.secondary',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {name}
-          </Typography>
-        </Box>
+        <Typography
+          sx={{
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            color: 'text.secondary',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            mb: 1.25,
+          }}
+        >
+          {name}
+        </Typography>
 
         <Typography
           component="div"
           sx={{
-            fontFamily: '"Inter", system-ui, sans-serif',
             fontWeight: 600,
             fontSize: '1.125rem',
             lineHeight: 1.2,
@@ -66,7 +61,13 @@ function CardAccountMobile({ id, name, balance }: CardAccountProps) {
           {fmtMoney(balance)}
         </Typography>
 
-        {!isLoading && (
+        {isLoading ? (
+          <Skeleton
+            variant="text"
+            width={80}
+            sx={{ fontSize: '0.6875rem', mt: 0.25, bgcolor: '#ece5d6' }}
+          />
+        ) : (
           <Typography
             variant="caption"
             component="div"
@@ -80,10 +81,9 @@ function CardAccountMobile({ id, name, balance }: CardAccountProps) {
   )
 }
 
-// Desktop: card completo com ícone no canto e barra de limite
 function CardAccountDesktop({ name, balance }: CardAccountProps) {
   return (
-    <Card sx={{ maxWidth: 360 }}>
+    <Card sx={{ maxWidth: 360, minWidth: 280 }}>
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Box>
@@ -99,7 +99,7 @@ function CardAccountDesktop({ name, balance }: CardAccountProps) {
                 lineHeight: 1.1,
                 letterSpacing: '-0.018em',
                 mt: 0.5,
-                fontFeatureSettings: '"tnum" 1',
+                fontFeatureSettings: '"tnum" 1, "cv11" 1',
                 color: 'text.primary',
               }}
             >
@@ -119,9 +119,7 @@ function CardAccountDesktop({ name, balance }: CardAccountProps) {
               justifyContent: 'center',
               flexShrink: 0,
             }}
-          >
-            {/*<TypeIcon type={type} size={iconSize.desktop} />*/}
-          </Box>
+          />
         </Box>
 
         <Divider sx={{ my: 2 }} />

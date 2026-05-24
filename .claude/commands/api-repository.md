@@ -1,1 +1,1 @@
-../../.agents/skills/api-repository.md
+../../.agents/skills/api-repository/SKILL.md
