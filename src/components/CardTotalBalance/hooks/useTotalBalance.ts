@@ -1,4 +1,4 @@
-import { useAccountRepository } from '../../../network/hooks/useAccountRepository.ts'
+import { useAccountRepository } from '../../../network/repository/AccountRepository/hook/useAccountRepository.ts'
 
 export function useTotalBalance() {
   const { data = [], isLoading } = useAccountRepository('getAccounts')

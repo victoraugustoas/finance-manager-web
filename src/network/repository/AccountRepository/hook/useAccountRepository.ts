@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
-import { Endpoints } from '../endpoints/endpoints.ts'
+import { Endpoints } from '../../../endpoints/endpoints.ts'
+import type { AccountRepository } from '../AccountRepository.ts'
 import type {
-  AccountRepository,
   EstimatedBalanceParams,
   EstimatedBalanceResponseDto,
   ListAccountsItemResponseDto,
-} from '../repository/AccountRepository.ts'
-import type { RepositoryWithCache } from '../repository/RepositoryWithCache.ts'
+} from '../dtos/index.ts'
+import type { RepositoryWithCache } from '../../RepositoryWithCache.ts'
 
 type AccountRepositoryOpts = {
   getAccounts: []
@@ -38,6 +38,8 @@ function buildQueryRepositoryAccount(method: keyof AccountRepository, opts: unkn
         enabled: !!id,
       }
     }
+    default:
+      return undefined
   }
 }
 
@@ -45,8 +47,8 @@ export function useAccountRepository<K extends keyof AccountRepository>(
   method: K,
   ...opts: AccountRepositoryOpts[K]
 ): RepositoryWithCache<AccountRepository>[K] {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, isLoading, refetch } = useQuery(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     buildQueryRepositoryAccount(method, opts as unknown[]) as any,
   )
   return { data, isLoading, retry: refetch } as RepositoryWithCache<AccountRepository>[K]

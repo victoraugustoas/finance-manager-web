@@ -1,6 +1,6 @@
 ---
 name: api-repository
-description: Scaffold a new API repository layer for a given entity. Generates the abstract repository class, typed DTOs in a dedicated dtos/ subfolder, and a TanStack React Query hook — all following the project's existing network layer patterns. Usage: /project:api-repository <EntityName>
+description: Scaffold a new API repository layer for a given entity. Generates the abstract repository class, typed DTOs in a dedicated dtos/ subfolder, and a TanStack React Query hook inside a hook/ subfolder — all following the project's existing network layer patterns. Usage: /project:api-repository <EntityName>
 ---
 
 # Generate API Repository
@@ -11,8 +11,8 @@ Create a new API repository for the entity: **$ARGUMENTS**
 
 Before writing any code, read these files to understand the exact patterns this project uses:
 
-- `src/network/repository/AccountRepository.ts`
-- `src/network/hooks/useAccountRepository.ts`
+- `src/network/repository/AccountRepository/AccountRepository.ts`
+- `src/network/repository/AccountRepository/hook/useAccountRepository.ts`
 - `src/network/repository/RepositoryWithCache.ts`
 - `src/network/endpoints/endpoints.ts`
 
@@ -20,17 +20,18 @@ Before writing any code, read these files to understand the exact patterns this 
 
 Use `$ARGUMENTS` as the PascalCase entity name. If the input already ends with "Repository", strip that suffix first.
 
-| Identifier | Rule | Example (`$ARGUMENTS` = `Transaction`) |
-|---|---|---|
-| Entity name | `$ARGUMENTS` as-is | `Transaction` |
-| Repository class | `{Name}Repository` | `TransactionRepository` |
-| Hook function | `use{Name}Repository` | `useTransactionRepository` |
-| Opts type | `{Name}RepositoryOpts` | `TransactionRepositoryOpts` |
-| Build-query fn | `buildQueryRepository{Name}` | `buildQueryRepositoryTransaction` |
-| Repository folder | `src/network/repository/{Name}Repository/` | `src/network/repository/TransactionRepository/` |
-| DTOs folder | `src/network/repository/{Name}Repository/dtos/` | `src/network/repository/TransactionRepository/dtos/` |
-| Hook file | `src/network/hooks/use{Name}Repository.ts` | `src/network/hooks/useTransactionRepository.ts` |
-| URL segment | lowercase, plural, kebab-case | `transactions` |
+| Identifier        | Rule                                                                  | Example (`$ARGUMENTS` = `Transaction`)                                          |
+| ----------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Entity name       | `$ARGUMENTS` as-is                                                    | `Transaction`                                                                   |
+| Repository class  | `{Name}Repository`                                                    | `TransactionRepository`                                                         |
+| Hook function     | `use{Name}Repository`                                                 | `useTransactionRepository`                                                      |
+| Opts type         | `{Name}RepositoryOpts`                                                | `TransactionRepositoryOpts`                                                     |
+| Build-query fn    | `buildQueryRepository{Name}`                                          | `buildQueryRepositoryTransaction`                                               |
+| Repository folder | `src/network/repository/{Name}Repository/`                            | `src/network/repository/TransactionRepository/`                                 |
+| DTOs folder       | `src/network/repository/{Name}Repository/dtos/`                       | `src/network/repository/TransactionRepository/dtos/`                            |
+| Hook folder       | `src/network/repository/{Name}Repository/hook/`                       | `src/network/repository/TransactionRepository/hook/`                            |
+| Hook file         | `src/network/repository/{Name}Repository/hook/use{Name}Repository.ts` | `src/network/repository/TransactionRepository/hook/useTransactionRepository.ts` |
+| URL segment       | lowercase, plural, kebab-case                                         | `transactions`                                                                  |
 
 For multi-word names (e.g. `TransactionCategory`), apply kebab-case to the URL segment and pluralize the last word (e.g. `transaction-categories`).
 
@@ -41,6 +42,7 @@ Create the following files:
 ### `src/network/repository/{Name}Repository/dtos/List{Name}sItemResponseDto.ts`
 
 Export a single interface named `List{Name}sItemResponseDto` with fields appropriate for the entity:
+
 - Always include `id: string`
 - Add 3–5 domain-relevant fields inferred from the entity name (e.g. for `Transaction`: `description`, `amount`, `date`, `type`, `categoryId`)
 - Use `string` for identifiers and text, `number` for monetary amounts, `string` (ISO format) for dates
@@ -91,14 +93,14 @@ Add additional abstract methods only if the entity strongly implies them from th
 
 ## Step 4 — Create the React Query hook
 
-Create `src/network/hooks/use{Name}Repository.ts` following the exact structure of `useAccountRepository.ts`:
+Create `src/network/repository/{Name}Repository/hook/use{Name}Repository.ts` following the exact structure of `useAccountRepository.ts`:
 
 1. **Imports**
    - `import { useQuery } from '@tanstack/react-query'`
-   - `import { Endpoints } from '../endpoints/endpoints.ts'`
-   - `import type { {Name}Repository, ... } from '../repository/{Name}Repository/{Name}Repository.ts'`
-   - `import type { List{Name}sItemResponseDto, {Name}Params } from '../repository/{Name}Repository/dtos/index.ts'`
-   - `import type { RepositoryWithCache } from '../repository/RepositoryWithCache.ts'`
+   - `import { Endpoints } from '../../../endpoints/endpoints.ts'`
+   - `import type { {Name}Repository } from '../{Name}Repository.ts'`
+   - `import type { List{Name}sItemResponseDto, {Name}Params } from '../dtos/index.ts'`
+   - `import type { RepositoryWithCache } from '../../RepositoryWithCache.ts'`
    - All relative imports **must** end in `.ts`
    - Use `import type` for all type-only imports
 
