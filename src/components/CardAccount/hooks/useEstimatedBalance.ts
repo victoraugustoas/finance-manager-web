@@ -1,5 +1,5 @@
 import { endOfMonth } from 'date-fns'
-import { useAccountRepository } from '../../../network/hooks/useAccountRepository.ts'
+import { useAccountRepository } from '../../../network/repository/AccountRepository/hook/useAccountRepository.ts'
 
 export function useEstimatedBalance(accountId: string) {
   const { data, isLoading } = useAccountRepository('getEstimatedBalance', {
