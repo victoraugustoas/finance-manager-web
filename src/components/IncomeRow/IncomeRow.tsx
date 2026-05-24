@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import type { LucideIcon } from 'lucide-react'
+import { useFormatDateTransactions } from '../../hooks/useFormatDateTransactions.ts'
 
 interface IncomeRowProps {
   name: string
@@ -31,6 +32,9 @@ export function IncomeRow({
   iconColor = '#3d6b4f',
   showDivider = true,
 }: IncomeRowProps) {
+  const { fmtDate } = useFormatDateTransactions()
+  const dateFormatted = fmtDate(date)
+
   return (
     <>
       <Box
@@ -71,7 +75,7 @@ export function IncomeRow({
             {name}
           </Typography>
           <Typography variant="caption">
-            {date} · {category} · {account}
+            {dateFormatted} · {category} · {account}
           </Typography>
         </Box>
 

@@ -3,5 +3,7 @@
   "add": "Adicionar",
   "search_placeholder": "Buscar por nome…",
   "synced": "Sincronizado",
-  "coming_soon": "Em construção."
+  "coming_soon": "Em construção.",
+  "date_today": "hoje",
+  "date_yesterday": "ontem"
 }

@@ -5,5 +5,10 @@
   "recent_activity": "atividade recente",
   "view_all": "Ver tudo →",
   "chart_income_vs_outgo": "entradas vs saídas",
-  "chart_money_distribution": "onde foi o dinheiro"
+  "chart_money_distribution": "onde foi o dinheiro",
+  "last_expenses": "Últimas despesas",
+  "last_incomes": "Últimas entradas",
+  "last_transfers": "Últimas transferências",
+  "category_breakdown_incomes": "Entradas por categoria",
+  "category_breakdown_expenses": "Despesas por categoria"
 }

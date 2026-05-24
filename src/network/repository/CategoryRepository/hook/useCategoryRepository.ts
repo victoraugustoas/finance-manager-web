@@ -1,15 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { Endpoints } from '../../../endpoints/endpoints.ts'
 import type { CategoryRepository } from '../CategoryRepository.ts'
-import type { ListCategoriesItemResponseDto } from '../dtos/index.ts'
+import type { ListCategoriesItemResponseDto } from '../dtos'
 import type { RepositoryWithCache } from '../../RepositoryWithCache.ts'
 
-type CategoryRepositoryOpts = {
-  getIncome: []
-  getExpense: []
-}
-
-function buildQueryRepositoryCategory(method: keyof CategoryRepository, opts: unknown[]) {
+function buildQueryRepositoryCategory(method: keyof CategoryRepository) {
   switch (method) {
     case 'getIncome':
       return {
@@ -36,11 +31,10 @@ function buildQueryRepositoryCategory(method: keyof CategoryRepository, opts: un
 
 export function useCategoryRepository<K extends keyof CategoryRepository>(
   method: K,
-  ...opts: CategoryRepositoryOpts[K]
 ): RepositoryWithCache<CategoryRepository>[K] {
   const { data, isLoading, refetch } = useQuery(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    buildQueryRepositoryCategory(method, opts as unknown[]) as any,
+    buildQueryRepositoryCategory(method) as any,
   )
   return { data, isLoading, retry: refetch } as RepositoryWithCache<CategoryRepository>[K]
 }

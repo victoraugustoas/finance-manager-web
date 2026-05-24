@@ -55,6 +55,7 @@ export type DateFormatOptions = {
 export type FormatDateFn = (date: Date | number, options?: DateFormatOptions) => string
 export type FormatDistanceFn = (date: Date | number, baseDate: Date | number) => string
 export type FormatRelativeFn = (date: Date | number, baseDate: Date | number) => string
+export type FormatCurrencyFn = (amount: number, currency: string) => string
 
 export type TranslateOptions = {
   count?: number
@@ -101,6 +102,7 @@ export type UseTranslateReturn = {
    * formatRelative(pastDate, new Date())  // "segunda-feira às 14:30"
    */
   formatRelative: FormatRelativeFn
+  formatMoney: FormatCurrencyFn
 }
 
 export function useTranslate(namespace?: string): UseTranslateReturn {
@@ -117,7 +119,13 @@ export function useTranslate(namespace?: string): UseTranslateReturn {
       }),
     formatDistance: (date, baseDate) =>
       formatDistance(date, baseDate, { locale: dateFnsLocale, addSuffix: true }),
-    formatRelative: (date, baseDate) =>
-      formatRelative(date, baseDate, { locale: dateFnsLocale }),
+    formatRelative: (date, baseDate) => formatRelative(date, baseDate, { locale: dateFnsLocale }),
+    formatMoney: (n: number, currency) =>
+      n.toLocaleString(instance.language, {
+        currency: currency,
+        style: 'currency',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
   }
 }

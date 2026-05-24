@@ -2,39 +2,39 @@ import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import type { LucideIcon } from 'lucide-react'
+import { ArrowLeftRight } from 'lucide-react'
 import { useFormatDateTransactions } from '../../hooks/useFormatDateTransactions.ts'
 
-interface ExpenseRowProps {
+export interface TransferRowProps {
   name: string
-  category: string
-  account: string
+  from: string
+  to: string
   date: string
   amount: number
-  icon: LucideIcon
+  icon?: LucideIcon
   iconColor?: string
   showDivider?: boolean
 }
 
 function fmtMoney(n: number) {
-  return `R$ ${Math.abs(n).toLocaleString('pt-BR', {
+  return `R$ ${n.toLocaleString('pt-BR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`
 }
 
-export function ExpenseRow({
+export function TransferRow({
   name,
-  category,
-  account,
+  from,
+  to,
   date,
   amount,
-  icon: Icon,
-  iconColor = '#807a6c',
+  icon: Icon = ArrowLeftRight,
+  iconColor = '#4f7a9b',
   showDivider = true,
-}: ExpenseRowProps) {
+}: TransferRowProps) {
   const { fmtDate } = useFormatDateTransactions()
   const dateFormatted = fmtDate(date)
-
   return (
     <>
       <Box
@@ -75,17 +75,16 @@ export function ExpenseRow({
             {name}
           </Typography>
           <Typography variant="caption">
-            {dateFormatted} · {category} · {account}
+            {dateFormatted} · {from} → {to}
           </Typography>
         </Box>
 
         <Typography
           sx={{
-            fontFamily: '"Inter", system-ui, sans-serif',
             fontWeight: 600,
             fontSize: '0.875rem',
             fontFeatureSettings: '"tnum" 1',
-            color: 'text.primary',
+            color: 'text.secondary',
             flexShrink: 0,
           }}
         >

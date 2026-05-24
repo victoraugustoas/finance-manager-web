@@ -1,18 +1,25 @@
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import LinearProgress from '@mui/material/LinearProgress'
+import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
+import type { CategoryBreakdownType } from '../../../../network/repository/ReportingRepository/dtos/index.ts'
+import { useCategoryBreakdown } from './hooks/useCategoryBreakdown.ts'
+import { useTranslate } from '../../../../hooks/useTranslate.ts'
 
-export interface CategoryBreakdownItem {
-  id: string
-  name: string
-  color: string
-  total: number
-}
+const CATEGORY_COLORS = [
+  '#3d6b4f',
+  '#8b5a2b',
+  '#5a6b8b',
+  '#8b2e2e',
+  '#6b5a8b',
+  '#2e8b5a',
+  '#5a8b6b',
+  '#8b7a2b',
+]
 
-interface CategoryBreakdownProps {
-  items: CategoryBreakdownItem[]
+export interface CategoryBreakdownProps {
+  type: CategoryBreakdownType
   onSeeAll?: () => void
 }
 
@@ -23,8 +30,9 @@ function fmtMoney(n: number) {
   })}`
 }
 
-export function CategoryBreakdown({ items, onSeeAll }: CategoryBreakdownProps) {
-  const total = items.reduce((s, i) => s + i.total, 0)
+export function CategoryBreakdown({ type, onSeeAll }: CategoryBreakdownProps) {
+  const { categories, isLoading } = useCategoryBreakdown(type)
+  const { t } = useTranslate('dashboard')
 
   return (
     <Card sx={{ height: '100%' }}>
@@ -38,7 +46,9 @@ export function CategoryBreakdown({ items, onSeeAll }: CategoryBreakdownProps) {
           }}
         >
           <Typography variant="h2" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-            por categoria
+            {type === 'EXPENSE'
+              ? t('category_breakdown_expenses')
+              : t('category_breakdown_incomes')}
           </Typography>
           {onSeeAll && (
             <Box
@@ -62,17 +72,36 @@ export function CategoryBreakdown({ items, onSeeAll }: CategoryBreakdownProps) {
         </Box>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.75 }}>
-          {items.map(({ id, name, color, total: itemTotal }) => {
-            const pct = total > 0 ? (itemTotal / total) * 100 : 0
-            return (
-              <Box key={id}>
+          {isLoading
+            ? Array.from({ length: 3 }).map((_, i) => (
                 <Box
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    mb: '6px',
-                  }}
+                  key={i}
+                  sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Skeleton
+                      variant="circular"
+                      width={8}
+                      height={8}
+                      sx={{ bgcolor: '#ede8de', flexShrink: 0 }}
+                    />
+                    <Skeleton
+                      variant="text"
+                      width={100}
+                      sx={{ fontSize: '0.8125rem', bgcolor: '#ede8de' }}
+                    />
+                  </Box>
+                  <Skeleton
+                    variant="text"
+                    width={70}
+                    sx={{ fontSize: '0.8125rem', bgcolor: '#ede8de' }}
+                  />
+                </Box>
+              ))
+            : categories.map(({ name, total }, index) => (
+                <Box
+                  key={name}
+                  sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box
@@ -80,7 +109,7 @@ export function CategoryBreakdown({ items, onSeeAll }: CategoryBreakdownProps) {
                         width: 8,
                         height: 8,
                         borderRadius: '50%',
-                        bgcolor: color,
+                        bgcolor: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
                         flexShrink: 0,
                       }}
                     />
@@ -95,19 +124,10 @@ export function CategoryBreakdown({ items, onSeeAll }: CategoryBreakdownProps) {
                       fontFeatureSettings: '"tnum" 1',
                     }}
                   >
-                    {fmtMoney(itemTotal)}
+                    {fmtMoney(total)}
                   </Typography>
                 </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={pct}
-                  sx={{
-                    '& .MuiLinearProgress-bar': { bgcolor: color },
-                  }}
-                />
-              </Box>
-            )
-          })}
+              ))}
         </Box>
       </CardContent>
     </Card>
