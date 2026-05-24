@@ -3,22 +3,22 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import { ArrowDownToLine, Bus, ShoppingCart, Utensils } from 'lucide-react'
-import { CardAccount } from '../components/CardAccount/CardAccount'
-import { CardIncomeOutgo } from '../components/CardIncomeOutgo/CardIncomeOutgo'
-import { CardTotalBalance } from '../components/CardTotalBalance/CardTotalBalance'
-import { CategoryBreakdown } from '../components/CategoryBreakdown/CategoryBreakdown'
-import { ExpenseRow } from '../components/ExpenseRow/ExpenseRow'
-import { IncomeRow } from '../components/IncomeRow/IncomeRow'
-import { useTranslate } from '../hooks/useTranslate'
-import { ACCOUNTS, BALANCE, BREAKDOWN, INCOME, OUTGO } from '../mocks/data'
-import { categoryColors } from '../theme/pluma'
+import { CardIncomeOutgo } from '../../components/CardIncomeOutgo/CardIncomeOutgo.tsx'
+import { CardTotalBalance } from '../../components/CardTotalBalance/CardTotalBalance.tsx'
+import { CategoryBreakdown } from '../../components/CategoryBreakdown/CategoryBreakdown.tsx'
+import { ExpenseRow } from '../../components/ExpenseRow/ExpenseRow.tsx'
+import { IncomeRow } from '../../components/IncomeRow/IncomeRow.tsx'
+import { useTranslate } from '../../hooks/useTranslate.ts'
+import { BREAKDOWN, INCOME, OUTGO } from '../../mocks/data.ts'
+import { categoryColors } from '../../theme/pluma.ts'
+import { ListAccounts } from './components/ListAccounts.tsx'
 
 export function DashboardPage() {
   const { t } = useTranslate('dashboard')
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <CardTotalBalance balance={BALANCE} />
+      <CardTotalBalance />
 
       <Box
         sx={{
@@ -28,19 +28,7 @@ export function DashboardPage() {
         }}
       >
         <CardIncomeOutgo income={INCOME} outgo={OUTGO} />
-        <Box
-          sx={{
-            display: 'flex',
-            gap: 2,
-            overflowX: { xs: 'auto', sm: 'visible' },
-            flexWrap: { xs: 'nowrap', sm: 'wrap', md: 'nowrap' },
-            pb: { xs: 0.5, sm: 0 },
-          }}
-        >
-          {ACCOUNTS.map((a) => (
-            <CardAccount key={a.id} {...a} />
-          ))}
-        </Box>
+        <ListAccounts />
       </Box>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '5fr 7fr' }, gap: 2 }}>

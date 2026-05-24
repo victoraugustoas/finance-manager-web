@@ -1,10 +1,7 @@
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
-
-interface CardTotalBalanceProps {
-  balance: number
-}
+import { useTotalBalance } from './hooks/useTotalBalance.ts'
 
 function fmtMoney(n: number) {
   return `R$ ${Math.abs(n).toLocaleString('pt-BR', {
@@ -13,7 +10,9 @@ function fmtMoney(n: number) {
   })}`
 }
 
-export function CardTotalBalance({ balance }: CardTotalBalanceProps) {
+export function CardTotalBalance() {
+  const { balance } = useTotalBalance()
+
   return (
     <Card>
       <CardContent sx={{ p: { xs: '20px !important', sm: '28px !important' } }}>

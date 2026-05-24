@@ -2,20 +2,15 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Divider from '@mui/material/Divider'
-import LinearProgress from '@mui/material/LinearProgress'
 import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { CreditCard, PiggyBank, Wallet } from 'lucide-react'
-
-type AccountType = 'checking' | 'savings' | 'credit'
+import { useEstimatedBalance } from './hooks/useEstimatedBalance.ts'
 
 interface CardAccountProps {
+  id: string
   name: string
-  tail: string
-  type: AccountType
   balance: number
-  limit?: number
 }
 
 function fmtMoney(n: number) {
@@ -25,26 +20,10 @@ function fmtMoney(n: number) {
   })}`
 }
 
-const typeLabel: Record<AccountType, string> = {
-  checking: 'corrente',
-  savings: 'poupança',
-  credit: 'cartão',
-}
-
-const iconSize: Record<'mobile' | 'desktop', number> = {
-  mobile: 14,
-  desktop: 20,
-}
-
-const TypeIcon = ({ type, size }: { type: AccountType; size: number }) => {
-  const props = { size, strokeWidth: 2 }
-  if (type === 'credit') return <CreditCard {...props} />
-  if (type === 'savings') return <PiggyBank {...props} />
-  return <Wallet {...props} />
-}
-
 // Mobile: card compacto (180px) para scroll horizontal
-function CardAccountMobile({ name, tail, type, balance }: CardAccountProps) {
+function CardAccountMobile({ id, name, balance }: CardAccountProps) {
+  const { estimatedBalance, isLoading } = useEstimatedBalance(id)
+
   return (
     <Card
       sx={{
@@ -56,9 +35,9 @@ function CardAccountMobile({ name, tail, type, balance }: CardAccountProps) {
     >
       <CardContent sx={{ p: '16px !important' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.25 }}>
-          <Box sx={{ color: 'text.secondary', display: 'flex' }}>
-            <TypeIcon type={type} size={iconSize.mobile} />
-          </Box>
+          {/*<Box sx={{ color: 'text.secondary', display: 'flex' }}>*/}
+          {/*  <TypeIcon type={type} size={iconSize.mobile} />*/}
+          {/*</Box>*/}
           <Typography
             sx={{
               fontSize: '0.75rem',
@@ -87,29 +66,29 @@ function CardAccountMobile({ name, tail, type, balance }: CardAccountProps) {
           {fmtMoney(balance)}
         </Typography>
 
-        <Typography
-          variant="caption"
-          component="div"
-          sx={{ mt: 0.25, color: 'text.disabled', fontSize: '0.6875rem' }}
-        >
-          final {tail}
-        </Typography>
+        {!isLoading && (
+          <Typography
+            variant="caption"
+            component="div"
+            sx={{ mt: 0.25, color: 'text.disabled', fontSize: '0.6875rem' }}
+          >
+            {fmtMoney(estimatedBalance)}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   )
 }
 
 // Desktop: card completo com ícone no canto e barra de limite
-function CardAccountDesktop({ name, tail, type, balance, limit }: CardAccountProps) {
-  const usedPct = limit ? Math.round((balance / limit) * 100) : null
-
+function CardAccountDesktop({ name, balance }: CardAccountProps) {
   return (
     <Card sx={{ maxWidth: 360 }}>
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Box>
             <Typography variant="caption" component="div">
-              {name} · final {tail}
+              {name}
             </Typography>
             <Typography
               component="div"
@@ -141,25 +120,11 @@ function CardAccountDesktop({ name, tail, type, balance, limit }: CardAccountPro
               flexShrink: 0,
             }}
           >
-            <TypeIcon type={type} size={iconSize.desktop} />
+            {/*<TypeIcon type={type} size={iconSize.desktop} />*/}
           </Box>
         </Box>
 
         <Divider sx={{ my: 2 }} />
-
-        {usedPct !== null ? (
-          <>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-              <Typography variant="body2">{typeLabel[type]} usado</Typography>
-              <Typography variant="body2" sx={{ fontWeight: 600, fontFeatureSettings: '"tnum" 1' }}>
-                {usedPct}%
-              </Typography>
-            </Box>
-            <LinearProgress variant="determinate" value={usedPct} color="primary" />
-          </>
-        ) : (
-          <Typography variant="caption">{typeLabel[type]}</Typography>
-        )}
       </CardContent>
     </Card>
   )
@@ -169,7 +134,5 @@ export function CardAccount(props: CardAccountProps) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
-  return isMobile
-    ? <CardAccountMobile {...props} />
-    : <CardAccountDesktop {...props} />
+  return isMobile ? <CardAccountMobile {...props} /> : <CardAccountDesktop {...props} />
 }
