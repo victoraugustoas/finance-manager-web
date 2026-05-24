@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write .",
+    "prepare": "git config core.hooksPath git-hooks && chmod +x git-hooks/pre-commit"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,css,md}": "prettier --write"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -36,8 +41,11 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "lint-staged": "^17.0.5",
+    "prettier": "^3.8.3",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.59.2",
     "vite": "^8.0.12"
-  }
+  },
+  "packageManager": "pnpm@11.2.2"
 }

@@ -18,14 +18,15 @@ export function DashboardPage() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <CardTotalBalance
-        balance={BALANCE}
-        trend="+12% vs abril"
-        netLabel="+R$ 4.738,60 líquido esse mês"
-        sparklineData={[3200, 3450, 3100, 3800, 4100, 3950, 4382]}
-      />
+      <CardTotalBalance balance={BALANCE} />
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 2fr' }, gap: 2 }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 2fr' },
+          gap: 2,
+        }}
+      >
         <CardIncomeOutgo income={INCOME} outgo={OUTGO} />
         <Box
           sx={{
@@ -36,7 +37,9 @@ export function DashboardPage() {
             pb: { xs: 0.5, sm: 0 },
           }}
         >
-          {ACCOUNTS.map(a => <CardAccount key={a.id} {...a} />)}
+          {ACCOUNTS.map((a) => (
+            <CardAccount key={a.id} {...a} />
+          ))}
         </Box>
       </Box>
 
@@ -44,21 +47,69 @@ export function DashboardPage() {
         <CategoryBreakdown items={BREAKDOWN} />
         <Card>
           <CardContent sx={{ p: { xs: '16px !important', sm: '24px !important' } }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mb: 2 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'baseline',
+                mb: 2,
+              }}
+            >
               <Typography variant="h2" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
                 {t('recent_activity')}
               </Typography>
               <Box
                 component="button"
-                sx={{ bgcolor: 'transparent', border: 0, cursor: 'pointer', color: 'text.secondary', fontSize: '0.8125rem', fontWeight: 500, p: 0 }}
+                sx={{
+                  bgcolor: 'transparent',
+                  border: 0,
+                  cursor: 'pointer',
+                  color: 'text.secondary',
+                  fontSize: '0.8125rem',
+                  fontWeight: 500,
+                  p: 0,
+                }}
               >
                 {t('view_all')}
               </Box>
             </Box>
-            <IncomeRow name="Salário" category="salário" account="Inter" date="20 mai" amount={6200} icon={ArrowDownToLine} iconColor={categoryColors.salary} />
-            <ExpenseRow name="iFood" category="alimentação" account="Nubank" date="hoje" amount={38.90} icon={Utensils} iconColor={categoryColors.food} />
-            <ExpenseRow name="Mercado Pago" category="mercado" account="Inter" date="ontem" amount={124.50} icon={ShoppingCart} iconColor={categoryColors.grocery} />
-            <ExpenseRow name="Uber" category="transporte" account="Nubank" date="hoje" amount={22.40} icon={Bus} iconColor={categoryColors.transport} showDivider={false} />
+            <IncomeRow
+              name="Salário"
+              category="salário"
+              account="Inter"
+              date="20 mai"
+              amount={6200}
+              icon={ArrowDownToLine}
+              iconColor={categoryColors.salary}
+            />
+            <ExpenseRow
+              name="iFood"
+              category="alimentação"
+              account="Nubank"
+              date="hoje"
+              amount={38.9}
+              icon={Utensils}
+              iconColor={categoryColors.food}
+            />
+            <ExpenseRow
+              name="Mercado Pago"
+              category="mercado"
+              account="Inter"
+              date="ontem"
+              amount={124.5}
+              icon={ShoppingCart}
+              iconColor={categoryColors.grocery}
+            />
+            <ExpenseRow
+              name="Uber"
+              category="transporte"
+              account="Nubank"
+              date="hoje"
+              amount={22.4}
+              icon={Bus}
+              iconColor={categoryColors.transport}
+              showDivider={false}
+            />
           </CardContent>
         </Card>
       </Box>
