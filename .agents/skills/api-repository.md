@@ -1,3 +1,8 @@
+---
+name: api-repository
+description: Scaffold a new API repository layer for a given entity. Generates the abstract repository class, typed DTOs in a dedicated dtos/ subfolder, and a TanStack React Query hook — all following the project's existing network layer patterns. Usage: /project:api-repository <EntityName>
+---
+
 # Generate API Repository
 
 Create a new API repository for the entity: **$ARGUMENTS**
