@@ -1,0 +1,14 @@
+{
+  "filter_all": "All",
+  "filter_income": "Income",
+  "filter_outgo": "Expenses",
+  "modal_title": "new transaction",
+  "type_income": "Income",
+  "type_outgo": "Expense",
+  "field_amount": "Amount",
+  "field_amount_placeholder": "$ 0.00",
+  "field_category": "Category",
+  "field_account": "Account",
+  "field_date": "Date",
+  "field_date_placeholder": "Today"
+}

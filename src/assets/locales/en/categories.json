@@ -1,0 +1,8 @@
+{
+  "breakdown_title": "breakdown by category",
+  "col_category": "Category",
+  "col_transactions": "Transactions",
+  "col_total": "Total",
+  "col_month_pct": "% of month",
+  "row_summary": "{{count}} transactions · {{pct}}%"
+}

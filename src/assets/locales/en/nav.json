@@ -1,0 +1,11 @@
+{
+  "dashboard": "Overview",
+  "transactions": "Transactions",
+  "reports": "Reports",
+  "categories": "Categories",
+  "settings": "Settings",
+  "tab_home": "home",
+  "tab_transactions": "transact.",
+  "tab_reports": "reports",
+  "tab_settings": "profile"
+}

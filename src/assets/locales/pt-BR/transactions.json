@@ -1,0 +1,14 @@
+{
+  "filter_all": "Tudo",
+  "filter_income": "Entradas",
+  "filter_outgo": "Saídas",
+  "modal_title": "nova movimentação",
+  "type_income": "Entrada",
+  "type_outgo": "Saída",
+  "field_amount": "Valor",
+  "field_amount_placeholder": "R$ 0,00",
+  "field_category": "Categoria",
+  "field_account": "Conta",
+  "field_date": "Data",
+  "field_date_placeholder": "Hoje"
+}
