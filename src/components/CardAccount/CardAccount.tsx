@@ -6,6 +6,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
+import { useTranslate } from '../../hooks/useTranslate.ts'
 import { useEstimatedBalance } from './hooks/useEstimatedBalance.ts'
 
 export interface CardAccountProps {
@@ -14,66 +15,35 @@ export interface CardAccountProps {
   balance: number
 }
 
-function fmtMoney(n: number) {
-  return `R$ ${Math.abs(n).toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
-}
-
 function CardAccountMobile({ id, name, balance }: CardAccountProps) {
   const { estimatedBalance, isLoading } = useEstimatedBalance(id)
+  const { formatMoney } = useTranslate()
 
   return (
-    <Card
-      sx={{
-        flex: '0 0 180px',
-        borderRadius: '16px !important',
-        cursor: 'pointer',
-        '&:hover': { boxShadow: 3 },
-      }}
-    >
-      <CardContent sx={{ p: '16px !important' }}>
+    <Card sx={{ flex: '0 0 180px', cursor: 'pointer', '&:hover': { boxShadow: 3 } }}>
+      <CardContent sx={{ p: 4 }}>
         <Typography
-          sx={{
-            fontSize: '0.75rem',
-            fontWeight: 500,
-            color: 'text.secondary',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            mb: 1.25,
-          }}
+          variant="labelSm"
+          component="div"
+          color="text.secondary"
+          sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', mb: 2 }}
         >
           {name}
         </Typography>
 
-        <Typography
-          component="div"
-          sx={{
-            fontWeight: 600,
-            fontSize: '1.125rem',
-            lineHeight: 1.2,
-            color: 'text.primary',
-            fontFeatureSettings: '"tnum" 1',
-          }}
-        >
-          {fmtMoney(balance)}
+        <Typography variant="amountMd" component="div">
+          {formatMoney(balance, 'BRL')}
         </Typography>
 
         {isLoading ? (
           <Skeleton
             variant="text"
             width={80}
-            sx={{ fontSize: '0.6875rem', mt: 0.25, bgcolor: '#ece5d6' }}
+            sx={(t) => ({ ...t.typography.caption, mt: 1, bgcolor: 'background.surfaceInset' })}
           />
         ) : (
-          <Typography
-            variant="caption"
-            component="div"
-            sx={{ mt: 0.25, color: 'text.disabled', fontSize: '0.6875rem' }}
-          >
-            {fmtMoney(estimatedBalance)}
+          <Typography variant="caption" component="div" sx={{ mt: 1 }}>
+            {formatMoney(estimatedBalance, 'BRL')}
           </Typography>
         )}
       </CardContent>
@@ -82,6 +52,8 @@ function CardAccountMobile({ id, name, balance }: CardAccountProps) {
 }
 
 function CardAccountDesktop({ name, balance }: CardAccountProps) {
+  const { formatMoney } = useTranslate()
+
   return (
     <Card sx={{ maxWidth: 360, minWidth: 280 }}>
       <CardContent>
@@ -90,39 +62,27 @@ function CardAccountDesktop({ name, balance }: CardAccountProps) {
             <Typography variant="caption" component="div">
               {name}
             </Typography>
-            <Typography
-              component="div"
-              sx={{
-                fontFamily: '"Fraunces", Georgia, serif',
-                fontWeight: 500,
-                fontSize: '2rem',
-                lineHeight: 1.1,
-                letterSpacing: '-0.018em',
-                mt: 0.5,
-                fontFeatureSettings: '"tnum" 1, "cv11" 1',
-                color: 'text.primary',
-              }}
-            >
-              {fmtMoney(balance)}
+            <Typography variant="displaySm" component="div" color="text.primary" sx={{ mt: 1 }}>
+              {formatMoney(balance, 'BRL')}
             </Typography>
           </Box>
 
           <Box
-            sx={{
+            sx={(t) => ({
               width: 40,
               height: 40,
-              borderRadius: '10px',
+              borderRadius: t.shape.rounded.navItem,
               bgcolor: 'success.light',
               color: 'success.main',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
-            }}
+            })}
           />
         </Box>
 
-        <Divider sx={{ my: 2 }} />
+        <Divider sx={{ my: 4 }} />
       </CardContent>
     </Card>
   )

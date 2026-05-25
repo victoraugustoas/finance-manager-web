@@ -3,42 +3,44 @@ import { createTheme } from '@mui/material/styles'
 // ── Color tokens — ref: DESIGN.md § Colors ──────────────────────
 export const plumaColors = {
   // Brand & accent
-  primary:         '#3d6b4f',
-  primaryHover:    '#2a4a37',
-  primarySoft:     '#dde8df',
-  onPrimary:       '#fbf8f2',
+  primary: '#3d6b4f',
+  primaryHover: '#2a4a37',
+  primarySoft: '#dde8df',
+  onPrimary: '#fbf8f2',
   // Surfaces
-  canvas:          '#f6f2ea',
-  surface:         '#fbf8f2',
-  surfaceCard:     '#fffdf8',
+  canvas: '#f6f2ea',
+  surface: '#fbf8f2',
+  surfaceCard: '#fffdf8',
   surfaceElevated: '#ffffff',
-  surfaceInset:    '#ece5d6',
+  surfaceInset: '#ece5d6',
+  surfaceAvatar: '#d9cfb8',
   // Text
-  ink:             '#1a1815',
-  inkSecondary:    '#4a463e',
-  inkTertiary:     '#807a6c',
+  ink: '#1a1815',
+  inkSecondary: '#4a463e',
+  inkTertiary: '#807a6c',
   // Hairlines & dividers
-  hairline:        'rgba(26, 24, 21, 0.08)',
-  hairlineStrong:  'rgba(26, 24, 21, 0.16)',
-  divider:         'rgba(26, 24, 21, 0.06)',
+  hairline: 'rgba(26, 24, 21, 0.08)',
+  hairlineStrong: 'rgba(26, 24, 21, 0.16)',
+  divider: 'rgba(26, 24, 21, 0.06)',
   // Semantic feedback
-  positive:        '#3d6b4f',
-  positiveSoft:    '#dde8df',
-  negative:        '#c46a4e',
-  negativeSoft:    '#f5d9cf',
-  warning:         '#c89a2b',
-  warningSoft:     '#f5e2b8',
+  positive: '#3d6b4f',
+  positiveSoft: '#dde8df',
+  negative: '#c46a4e',
+  negativeSoft: '#f5d9cf',
+  warning: '#c89a2b',
+  warningSoft: '#f5e2b8',
 } as const
 
 // ── Border-radius tokens — ref: DESIGN.md § rounded ─────────────
 export const plumaRounded = {
-  sm:      6,
-  md:      12,
-  lg:      18,
-  xl:      28,
-  pill:    999,
+  sm: 6,
+  md: 12,
+  lg: 18,
+  xl: 28,
+  pill: 999,
   navItem: 10,
-  icon:    8,
+  icon: 8,
+  circle: '50%',
 } as const
 
 // ── Spacing tokens — ref: DESIGN.md § spacing ───────────────────
@@ -63,48 +65,55 @@ export const plumaMotion = {
 
 // ── Category palette — ref: DESIGN.md § Category Palette ────────
 export const categoryColors = {
-  grocery:   '#7a9b5e',
+  grocery: '#7a9b5e',
   transport: '#4f7a9b',
-  home:      '#9b6f4f',
-  leisure:   '#b87a9b',
-  health:    '#5e9b9b',
-  food:      '#c47a4e',
-  salary:    '#3d6b4f',
-  other:     '#807a6c',
+  home: '#9b6f4f',
+  leisure: '#b87a9b',
+  health: '#5e9b9b',
+  food: '#c47a4e',
+  salary: '#3d6b4f',
+  other: '#807a6c',
 } as const
 
 // ── MUI Theme ────────────────────────────────────────────────────
 export const plumaTheme = createTheme({
+  // spacing(n) → plumaSpacing[n]: 1=4px, 2=8px, 3=12px, 4=16px, 5=24px, 6=32px, 7=48px, 8=64px
+  spacing: [0, ...Object.values(plumaSpacing)],
+
   palette: {
     mode: 'light',
     background: {
       default: plumaColors.canvas,
-      paper:   plumaColors.surfaceCard,
+      paper: plumaColors.surfaceCard,
+      surface: plumaColors.surface,
+      surfaceAvatar: plumaColors.surfaceAvatar,
+      surfaceInset: plumaColors.surfaceInset,
     },
     text: {
-      primary:   plumaColors.ink,
+      primary: plumaColors.ink,
       secondary: plumaColors.inkSecondary,
-      disabled:  plumaColors.inkTertiary,
+      disabled: plumaColors.inkTertiary,
     },
     primary: {
-      main:         plumaColors.primary,
-      dark:         plumaColors.primaryHover,
-      light:        plumaColors.primarySoft,
+      main: plumaColors.primary,
+      dark: plumaColors.primaryHover,
+      light: plumaColors.primarySoft,
       contrastText: plumaColors.onPrimary,
     },
     success: {
-      main:  plumaColors.positive,
+      main: plumaColors.positive,
       light: plumaColors.positiveSoft,
     },
     error: {
-      main:  plumaColors.negative,
+      main: plumaColors.negative,
       light: plumaColors.negativeSoft,
     },
     warning: {
-      main:  plumaColors.warning,
+      main: plumaColors.warning,
       light: plumaColors.warningSoft,
     },
     divider: plumaColors.divider,
+    categoryColors,
   },
 
   typography: {
@@ -149,20 +158,129 @@ export const plumaTheme = createTheme({
       letterSpacing: 0,
       textTransform: 'none',
     },
+    // label-sm — rótulos, botões de ação e texto de suporte em 13px
+    labelSm: {
+      fontSize: '0.8125rem',
+      lineHeight: 1.5,
+      fontWeight: 500,
+    },
+    // amount-sm — valores monetários compactos em 13px com numeração tabular
+    amountSm: {
+      fontSize: '0.8125rem',
+      lineHeight: 1.5,
+      fontWeight: 600,
+      fontFeatureSettings: '"tnum" 1',
+    },
+    // display-money — Fraunces, usado em valores monetários em destaque
+    displayMoney: {
+      fontFamily: '"Fraunces", Georgia, serif',
+      fontWeight: 500,
+      fontSize: '2.625rem',
+      lineHeight: 1.05,
+      letterSpacing: '-0.02em',
+      fontFeatureSettings: '"tnum" 1, "cv11" 1',
+    },
+    // display-sm — Fraunces, saldo de conta (desktop)
+    displaySm: {
+      fontFamily: '"Fraunces", Georgia, serif',
+      fontWeight: 500,
+      fontSize: '2rem',
+      lineHeight: 1.1,
+      letterSpacing: '-0.018em',
+      fontFeatureSettings: '"tnum" 1, "cv11" 1',
+    },
+    // display-card — Fraunces, entradas/saídas em card
+    displayCard: {
+      fontFamily: '"Fraunces", Georgia, serif',
+      fontWeight: 500,
+      fontSize: '1.25rem',
+      lineHeight: 1.1,
+      letterSpacing: '-0.015em',
+      fontFeatureSettings: '"tnum" 1',
+    },
+    // display-xs — Fraunces, total central do donut
+    displayXs: {
+      fontFamily: '"Fraunces", Georgia, serif',
+      fontWeight: 500,
+      fontSize: '0.875rem',
+      lineHeight: 1.1,
+      letterSpacing: '-0.01em',
+      fontFeatureSettings: '"tnum" 1',
+    },
+    // page-title — Fraunces, título da página
+    pageTitle: {
+      fontFamily: '"Fraunces", Georgia, serif',
+      fontWeight: 500,
+      fontSize: '1.5rem',
+      lineHeight: 1.1,
+      letterSpacing: '-0.015em',
+    },
+    // brand-name — Fraunces, logotipo "pluma"
+    brandName: {
+      fontFamily: '"Fraunces", Georgia, serif',
+      fontWeight: 500,
+      fontSize: '1.375rem',
+      letterSpacing: '-0.02em',
+      lineHeight: 1.2,
+    },
+    // brand-icon — Fraunces, letra "p" do logotipo
+    brandIcon: {
+      fontFamily: '"Fraunces", Georgia, serif',
+      fontWeight: 500,
+      fontSize: '1.1rem',
+      letterSpacing: '-0.02em',
+      lineHeight: 1,
+    },
+    // amount-md — Inter, valores monetários médios
+    amountMd: {
+      fontSize: '1.125rem',
+      fontWeight: 600,
+      lineHeight: 1.2,
+      fontFeatureSettings: '"tnum" 1',
+    },
+    // row-title — Inter, nomes em linhas de transação
+    rowTitle: {
+      fontSize: '0.875rem',
+      fontWeight: 600,
+      lineHeight: 1.5,
+    },
+    // row-amount — Inter, valores em linhas de transação
+    rowAmount: {
+      fontSize: '0.875rem',
+      fontWeight: 600,
+      lineHeight: 1.5,
+      fontFeatureSettings: '"tnum" 1',
+    },
+    // nav-label — Inter, rótulos da tab bar
+    navLabel: {
+      fontSize: '0.625rem',
+      fontWeight: 600,
+      letterSpacing: '0.02em',
+      lineHeight: 1.4,
+    },
+    // table-header — Inter, cabeçalhos de tabela
+    tableHeader: {
+      fontSize: '0.6875rem',
+      fontWeight: 600,
+      textTransform: 'uppercase' as const,
+      letterSpacing: '0.04em',
+      lineHeight: 1.5,
+    },
   },
 
   shape: {
     borderRadius: plumaRounded.md,
+    rounded: plumaRounded,
   },
 
   // Elevation levels 0–5 matching DESIGN.md § Elevation
   shadows: [
-    'none',                                                                                // 0 — none
-    '0 1px 2px rgba(26,24,21,0.04)',                                                       // 1 — shadow-xs
-    '0 1px 2px rgba(26,24,21,0.04), 0 8px 24px -8px rgba(26,24,21,0.08)',                 // 2 — shadow-card
-    '0 4px 8px rgba(26,24,21,0.06), 0 16px 40px -8px rgba(26,24,21,0.14)',                // 3 — shadow-elevated
-    '0 4px 8px rgba(26,24,21,0.06), 0 16px 40px -8px rgba(26,24,21,0.14)',                // 4 — shadow-elevated (dup)
-    '0 24px 64px -16px rgba(26,24,21,0.28)',                                               // 5 — shadow-modal
+    'none', // 0 — none
+    '0 1px 2px rgba(26,24,21,0.04)', // 1 — shadow-xs
+    '0 1px 2px rgba(26,24,21,0.04), 0 8px 24px -8px rgba(26,24,21,0.08)', // 2 — shadow-card
+    '0 4px 8px rgba(26,24,21,0.06), 0 16px 40px -8px rgba(26,24,21,0.14)', // 3 — shadow-elevated
+    '0 4px 8px rgba(26,24,21,0.06), 0 16px 40px -8px rgba(26,24,21,0.14)', // 4 — shadow-elevated (dup)
+    '0 24px 64px -16px rgba(26,24,21,0.28)', // 5 — shadow-modal
     ...Array(19).fill('none'),
   ] as ReturnType<typeof createTheme>['shadows'],
 
@@ -278,6 +396,35 @@ export const plumaTheme = createTheme({
           border: 'none',
         },
       },
+    },
+
+    MuiTypography: {
+      variants: [
+        {
+          props: { variant: 'h2' },
+          style: { '@media (max-width:599px)': { fontSize: '1rem' } },
+        },
+        {
+          props: { variant: 'displayMoney' },
+          style: { '@media (min-width:600px)': { fontSize: '3.5rem' } },
+        },
+        {
+          props: { variant: 'pageTitle' },
+          style: { '@media (min-width:600px)': { fontSize: '1.75rem' } },
+        },
+        {
+          props: { variant: 'displayCard' },
+          style: { '@media (min-width:600px)': { fontSize: '1.5rem' } },
+        },
+        {
+          props: { variant: 'displayXs' },
+          style: { '@media (min-width:600px)': { fontSize: '1.125rem' } },
+        },
+        {
+          props: { variant: 'navLabel' },
+          style: { '@media (min-width:600px)': { fontSize: '0.6875rem' } },
+        },
+      ],
     },
 
     MuiLinearProgress: {

@@ -18,8 +18,8 @@ Prompt:
 > Read the following files from the project at the current working directory and report their full contents:
 >
 > 1. `DESIGN.md` (at the root)
-> 2. `src/components/CardTotalBalance/CardTotalBalance.tsx`
-> 3. `src/components/IncomeRow/IncomeRow.tsx`
+> 2. `src/components/IncomeRow/IncomeRow.tsx`
+> 3. `src/components/CardAccount/CardAccount.tsx`
 >
 > Report: all design tokens found in DESIGN.md (colors, typography, spacing, border-radius, shadows) AND the full source of the two component files so the structural patterns are clear.
 
@@ -60,7 +60,7 @@ Extract the PascalCase component name from `$ARGUMENTS` (use only the name part,
 
 ## Step 3 — Create the component file
 
-Create `src/components/{Name}/{Name}.tsx` following these rules derived from the codebase agent's findings:
+Create `src/components/{Name}/{Name}.tsx` following these rules:
 
 ### File structure
 
@@ -71,12 +71,10 @@ export interface {Name}Props {
   // typed props
 }
 
-[optional helper functions, e.g. fmtMoney]
-
 export function {Name}({ ... }: {Name}Props) {
   [optional hooks]
 
-  [optional skeleton guard — see below]
+  [optional skeleton guard — see Step 4]
 
   return (...)
 }
@@ -87,47 +85,14 @@ export function {Name}({ ... }: {Name}Props) {
 - MUI components imported individually by path: `import Card from '@mui/material/Card'`
 - MUI types with `import type`: `import type { SxProps } from '@mui/material'`
 - Lucide icons: `import { TrendingUp } from 'lucide-react'` — pass as `icon: LucideIcon` prop when flexible
-- `useTheme` and `useMediaQuery` from `@mui/material/styles` when responsive logic is needed
+- `useTheme` from `@mui/material/styles` when palette colors are needed outside of `sx`
+- `useMediaQuery` from `@mui/material` only when conditional **JSX** (not just style) depends on a breakpoint
 
 ### Props
 
 - Define `{Name}Props` interface at the top and **export** it
 - Type all props strictly — no `any`
-- Use `LucideIcon` type for icon props when applicable: `import type { LucideIcon } from 'lucide-react'`
-
-### Styling
-
-All styles go through the MUI `sx` prop. No CSS modules, no styled-components.
-
-**Pluma design tokens to use:**
-
-| Token         | Value              | Usage                                                     |
-| ------------- | ------------------ | --------------------------------------------------------- |
-| Primary       | `#3d6b4f`          | Moss green — primary actions, active states, accent icons |
-| Primary hover | `#325a41`          | Hover on primary                                          |
-| Primary soft  | `#eef3eb`          | Soft background for primary                               |
-| Canvas        | `#f6f2ea`          | Page background                                           |
-| Card surface  | `#faf7f2`          | Card backgrounds                                          |
-| Elevated      | `#ffffff`          | Elevated cards, modals                                    |
-| Inset         | `#ede8de`          | Inset/well backgrounds                                    |
-| Ink primary   | `#1a1a18`          | Main text                                                 |
-| Ink secondary | `#5c5a54`          | Secondary text                                            |
-| Ink tertiary  | `#9c9a94`          | Hints, placeholders                                       |
-| Positive      | `#2d6a4f`          | Income, positive amounts                                  |
-| Negative      | `#8b2e2e`          | Expense, negative amounts                                 |
-| Border        | `rgba(0,0,0,0.08)` | Dividers, borders                                         |
-
-**Spacing scale (use px values directly):** 4, 8, 12, 16, 24, 32, 48, 64
-
-**Border radius:** sm=6px, md=12px, lg=18px, xl=28px, pill=999px, nav-item=10px, icon=8px
-
-**Typography:**
-
-- Financial display numbers (balances, totals): `fontFamily: '"Fraunces", Georgia, serif'` + `fontFeatureSettings: '"tnum" 1'`
-- All other text: Inter (default theme font, no explicit fontFamily needed)
-- Money amounts in lists: `fontFeatureSettings: '"tnum" 1'` even in Inter
-
-**Responsive:** use `{ xs: ..., sm: ..., md: ... }` syntax inside `sx` for breakpoint-aware values. Use `useMediaQuery(theme.breakpoints.down('sm'))` only when conditional JSX (not just style) depends on the breakpoint.
+- Use `LucideIcon` type for icon props: `import type { LucideIcon } from 'lucide-react'`
 
 ### Named export, no barrel
 
@@ -136,9 +101,113 @@ All styles go through the MUI `sx` prop. No CSS modules, no styled-components.
 
 ---
 
+## Styling rules
+
+All styles go through the MUI `sx` prop. No CSS modules, no styled-components, no inline `style` objects.
+
+### ❌ Never do
+
+- **Hardcode hex colors**: `bgcolor: '#ece5d6'`, `color: '#3d6b4f'` — always use palette tokens
+- **Hardcode px values in sx**: `borderRadius: '12px'`, `gap: '14px'` — always use theme tokens
+- **Use fractional spacing**: `gap: 1.75`, `p: 2.5` — pick the nearest integer in the Pluma scale
+- **Use `!important`**: fight specificity through theme overrides and sx, never with `!important`
+- **Inline font properties**: `fontFamily`, `fontWeight`, `fontSize`, `letterSpacing`, `fontFeatureSettings` — use typography variants instead
+- **Import `plumaColors`, `plumaRounded`, or `plumaSpacing` directly** into components — use only what's exposed in the MUI theme
+
+### Colors in `sx` — use palette token paths
+
+```tsx
+// surfaces
+bgcolor: 'background.paper' // card surface (#fffdf8)
+bgcolor: 'background.surfaceInset' // inset / well (#ece5d6)
+bgcolor: 'background.default' // page canvas (#f6f2ea)
+
+// text
+color: 'text.primary'
+color: 'text.secondary'
+color: 'text.disabled'
+
+// semantic
+color: 'primary.main'
+color: 'success.main' // positive / income
+color: 'error.main' // negative / expense
+```
+
+### Colors in JS config objects — use `useTheme()`
+
+When a color must be a plain string (e.g. passed as a prop to a child component or used in a runtime config object), resolve it from the theme:
+
+```tsx
+const theme = useTheme()
+
+const config = {
+  income: { iconBg: theme.palette.success.main, amountColor: theme.palette.success.main },
+  expense: { iconBg: theme.palette.error.main, amountColor: theme.palette.text.primary },
+  transfer: {
+    iconBg: theme.palette.categoryColors.transport,
+    amountColor: theme.palette.text.secondary,
+  },
+}
+```
+
+### Spacing — Pluma scale (1=4px … 8=64px)
+
+The theme registers `spacing(n)` as the Pluma array. Use **integers only** in `sx`:
+
+| Index | Result |
+| ----- | ------ |
+| `1`   | 4px    |
+| `2`   | 8px    |
+| `3`   | 12px   |
+| `4`   | 16px   |
+| `5`   | 24px   |
+| `6`   | 32px   |
+| `7`   | 48px   |
+| `8`   | 64px   |
+
+When a desired value (e.g. 14px, 20px, 28px) falls between two tokens, choose the nearest one. Never use fractions.
+
+### Border radius — `t.shape.rounded.*`
+
+Use a theme callback in `sx` to access rounded tokens:
+
+```tsx
+sx={(t) => ({ borderRadius: t.shape.rounded.lg })}
+```
+
+| Token                     | Value   | Use for                    |
+| ------------------------- | ------- | -------------------------- |
+| `t.shape.rounded.sm`      | 6px     | Chips, badges              |
+| `t.shape.rounded.md`      | 12px    | Inputs, small cards        |
+| `t.shape.rounded.lg`      | 18px    | Main cards                 |
+| `t.shape.rounded.xl`      | 28px    | Sheets, large modals       |
+| `t.shape.rounded.pill`    | 999px   | Pills, tags                |
+| `t.shape.rounded.navItem` | 10px    | Nav items, icon containers |
+| `t.shape.rounded.icon`    | 8px     | Icon chips                 |
+| `t.shape.rounded.circle`  | `'50%'` | Circular dots, avatars     |
+
+### Typography — use variants, never inline font properties
+
+| Variant                  | Use for                                                    |
+| ------------------------ | ---------------------------------------------------------- |
+| `variant="h1"`           | Page headings (24px, 600)                                  |
+| `variant="h2"`           | Card headings, responsive (1rem xs → 1.25rem sm)           |
+| `variant="body1"`        | Primary body text (16px)                                   |
+| `variant="body2"`        | Secondary / smaller body text (14px)                       |
+| `variant="caption"`      | Labels, metadata (12px)                                    |
+| `variant="displayMoney"` | Hero monetary values (Fraunces, 42px → 56px responsive)    |
+| `variant="labelSm"`      | Action buttons, row labels (13px, weight 500)              |
+| `variant="amountSm"`     | Compact monetary amounts in lists (13px, weight 600, tnum) |
+
+For Inter: no explicit `fontFamily` needed — it is the theme default.
+
+**Responsive breakpoints:** use `{ xs: ..., sm: ..., md: ... }` inside `sx` for breakpoint-aware values. The h2 variant is already responsive via the theme — no additional sx override needed.
+
+---
+
 ## Step 4 — Skeleton for components with data fetching
 
-If the component fetches data through a hook that returns `isLoading`:
+If the component fetches data through a hook that returns `isLoading`, show skeletons only for dynamic content. The card shell and static labels remain visible during loading.
 
 ```tsx
 import Skeleton from '@mui/material/Skeleton'
@@ -148,13 +217,24 @@ export function {Name}({ ... }: {Name}Props) {
 
   return (
     <Card>
-      <CardContent>
-        <Typography variant="caption">static label</Typography>
+      <CardContent sx={{ p: { xs: 4, sm: 5 } }}>
+        <Typography variant="caption" component="div" sx={{ mb: 1 }}>
+          rótulo estático
+        </Typography>
 
         {isLoading ? (
-          <Skeleton variant="text" width="70%" sx={{ fontSize: '2rem', bgcolor: '#ede8de' }} />
+          <Skeleton
+            variant="text"
+            width="70%"
+            sx={(theme) => ({
+              ...theme.typography.displayMoney,
+              bgcolor: 'background.surfaceInset',
+            })}
+          />
         ) : (
-          <Typography>...</Typography>
+          <Typography variant="displayMoney" component="div" color="text.primary">
+            {value}
+          </Typography>
         )}
       </CardContent>
     </Card>
@@ -164,12 +244,21 @@ export function {Name}({ ... }: {Name}Props) {
 
 **Skeleton rules:**
 
-- The skeleton replaces **only dynamically loaded content** — static labels, titles, and the card shell remain visible during loading
-- `variant="text"` for numeric or text values: use `sx={{ fontSize }}` matching the real text so the skeleton height mirrors it
-- `variant="rounded"` for whole image or block placeholders
-- `variant="circular"` for icon containers and avatars
-- `sx={{ bgcolor: '#ede8de' }}` to blend with the Pluma canvas
-- For list components: render 2–3 skeleton items to simulate real content, not just one
+- `bgcolor: 'background.surfaceInset'` — always; never hex
+- **Text skeletons** — spread the matching typography variant to get the correct height automatically:
+  ```tsx
+  sx={(t) => ({ ...t.typography.body2,    bgcolor: 'background.surfaceInset' })}
+  sx={(t) => ({ ...t.typography.caption,  bgcolor: 'background.surfaceInset' })}
+  sx={(t) => ({ ...t.typography.labelSm,  bgcolor: 'background.surfaceInset' })}
+  sx={(t) => ({ ...t.typography.amountSm, bgcolor: 'background.surfaceInset' })}
+  sx={(t) => ({ ...t.typography.displayMoney, bgcolor: 'background.surfaceInset' })}
+  ```
+- **Rounded/block skeletons** — use `t.shape.rounded.*` for border radius:
+  ```tsx
+  sx={(t) => ({ borderRadius: t.shape.rounded.navItem, bgcolor: 'background.surfaceInset' })}
+  sx={(t) => ({ borderRadius: t.shape.rounded.lg,      bgcolor: 'background.surfaceInset' })}
+  ```
+- For list components: render 2–3 skeleton rows to simulate real content
 
 ---
 

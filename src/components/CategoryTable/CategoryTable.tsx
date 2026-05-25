@@ -4,6 +4,7 @@ import CardContent from '@mui/material/CardContent'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import type { LucideIcon } from 'lucide-react'
+import { useTranslate } from '../../hooks/useTranslate.ts'
 
 export interface CategoryTableRow {
   id: string
@@ -20,40 +21,30 @@ interface CategoryTableProps {
   rows: CategoryTableRow[]
 }
 
-function fmtMoney(n: number) {
-  return `R$ ${n.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
-}
-
 export function CategoryTable({ title = 'detalhamento por categoria', rows }: CategoryTableProps) {
+  const { formatMoney } = useTranslate()
+
   return (
     <Card>
-      <CardContent sx={{ p: { xs: '16px !important', sm: '24px !important' } }}>
-        <Typography variant="h2" sx={{ mb: 2, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+      <CardContent sx={{ p: { xs: 4, sm: 5 } }}>
+        <Typography variant="h2" sx={{ mb: 4 }}>
           {title}
         </Typography>
 
-        {/* Header — oculto no mobile (compacto) */}
         <Box
           sx={{
             display: { xs: 'none', sm: 'grid' },
             gridTemplateColumns: '1fr 80px 120px 80px',
-            pb: 1,
+            pb: 2,
           }}
         >
           {['Categoria', 'Transações', 'Total', '% do mês'].map((h, i) => (
             <Typography
               key={h}
-              sx={{
-                fontSize: '0.6875rem',
-                fontWeight: 600,
-                color: 'text.disabled',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-                textAlign: i >= 2 ? 'right' : 'left',
-              }}
+              variant="tableHeader"
+              component="div"
+              color="text.disabled"
+              sx={{ textAlign: i >= 2 ? 'right' : 'left' }}
             >
               {h}
             </Typography>
@@ -73,70 +64,79 @@ export function CategoryTable({ title = 'detalhamento por categoria', rows }: Ca
                   display: { xs: 'none', sm: 'grid' },
                   gridTemplateColumns: '1fr 80px 120px 80px',
                   alignItems: 'center',
-                  py: '14px',
+                  py: 4,
                 }}
               >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                   <Box
-                    sx={{
+                    sx={(t) => ({
                       width: 32,
                       height: 32,
-                      borderRadius: '8px',
+                      borderRadius: t.shape.rounded.icon,
                       bgcolor: row.iconColor,
-                      color: '#fff',
+                      color: 'common.white',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       flexShrink: 0,
-                    }}
+                    })}
                   >
                     <Icon size={16} strokeWidth={2} />
                   </Box>
-                  <Typography sx={{ fontSize: '0.875rem', fontWeight: 600 }}>
+                  <Typography variant="rowTitle" component="div">
                     {row.name}
                   </Typography>
                 </Box>
-                <Typography sx={{ fontSize: '0.8125rem', color: 'text.secondary' }}>
+                <Typography variant="labelSm" color="text.secondary">
                   {row.count}
                 </Typography>
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, textAlign: 'right', fontFeatureSettings: '"tnum" 1' }}>
-                  {fmtMoney(row.total)}
+                <Typography variant="rowAmount" component="div" sx={{ textAlign: 'right' }}>
+                  {formatMoney(row.total, 'BRL')}
                 </Typography>
-                <Typography sx={{ fontSize: '0.8125rem', color: 'text.secondary', textAlign: 'right', fontFeatureSettings: '"tnum" 1' }}>
+                <Typography
+                  variant="amountSm"
+                  component="div"
+                  color="text.secondary"
+                  sx={{ textAlign: 'right' }}
+                >
                   {row.pct.toFixed(0)}%
                 </Typography>
               </Box>
 
-              {/* Mobile: linha compacta com ícone + nome + valor */}
+              {/* Mobile: linha compacta */}
               <Box
                 sx={{
                   display: { xs: 'flex', sm: 'none' },
                   alignItems: 'center',
-                  gap: 1.5,
-                  py: '12px',
+                  gap: 3,
+                  py: 3,
                 }}
               >
                 <Box
-                  sx={{
+                  sx={(t) => ({
                     width: 32,
                     height: 32,
-                    borderRadius: '8px',
+                    borderRadius: t.shape.rounded.icon,
                     bgcolor: row.iconColor,
-                    color: '#fff',
+                    color: 'common.white',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0,
-                  }}
+                  })}
                 >
                   <Icon size={16} strokeWidth={2} />
                 </Box>
                 <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Typography sx={{ fontSize: '0.875rem', fontWeight: 600 }}>{row.name}</Typography>
-                  <Typography variant="caption">{row.count} transações · {row.pct.toFixed(0)}%</Typography>
+                  <Typography variant="rowTitle" component="div">
+                    {row.name}
+                  </Typography>
+                  <Typography variant="caption">
+                    {row.count} transações · {row.pct.toFixed(0)}%
+                  </Typography>
                 </Box>
-                <Typography sx={{ fontSize: '0.875rem', fontWeight: 600, fontFeatureSettings: '"tnum" 1', flexShrink: 0 }}>
-                  {fmtMoney(row.total)}
+                <Typography variant="rowAmount" component="div" sx={{ flexShrink: 0 }}>
+                  {formatMoney(row.total, 'BRL')}
                 </Typography>
               </Box>
 

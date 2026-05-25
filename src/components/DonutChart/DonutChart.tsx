@@ -2,6 +2,8 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
+import { useTheme } from '@mui/material/styles'
+import { useTranslate } from '../../hooks/useTranslate.ts'
 
 export interface DonutSegment {
   id: string
@@ -16,19 +18,14 @@ interface DonutChartProps {
   centerLabel?: string
 }
 
-function fmtMoney(n: number) {
-  return `R$ ${n.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
-}
-
 export function DonutChart({ title, segments, centerLabel = 'total' }: DonutChartProps) {
+  const theme = useTheme()
+  const { formatMoney } = useTranslate()
   const total = segments.reduce((s, seg) => s + seg.value, 0)
+  const paperColor = theme.palette.background.paper
 
-  // Calcula ângulos acumulados para os segmentos do donut
   let cumulative = 0
-  const paths = segments.map(seg => {
+  const paths = segments.map((seg) => {
     const pct = total > 0 ? seg.value / total : 0
     const start = cumulative
     cumulative += pct
@@ -50,19 +47,20 @@ export function DonutChart({ title, segments, centerLabel = 'total' }: DonutChar
     <Card sx={{ height: '100%' }}>
       <CardContent
         sx={{
-          p: { xs: '16px !important', sm: '28px !important' },
+          p: { xs: 4, sm: 5 },
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 2,
+          gap: 4,
         }}
       >
-        <Typography variant="h2" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' }, alignSelf: 'flex-start' }}>
+        <Typography variant="h2" sx={{ alignSelf: 'flex-start' }}>
           {title}
         </Typography>
 
-        {/* SVG Donut */}
-        <Box sx={{ position: 'relative', width: { xs: 160, sm: 200 }, height: { xs: 160, sm: 200 } }}>
+        <Box
+          sx={{ position: 'relative', width: { xs: 160, sm: 200 }, height: { xs: 160, sm: 200 } }}
+        >
           <svg
             viewBox="-50 -50 100 100"
             width="100%"
@@ -70,18 +68,11 @@ export function DonutChart({ title, segments, centerLabel = 'total' }: DonutChar
             style={{ transform: 'rotate(-90deg)' }}
           >
             {paths.map(({ id, color, d }) => (
-              <path
-                key={id}
-                d={d}
-                fill={color}
-                stroke="#fffdf8"
-                strokeWidth="1.2"
-              />
+              <path key={id} d={d} fill={color} stroke={paperColor} strokeWidth="1.2" />
             ))}
-            <circle cx="0" cy="0" r="22" fill="#fffdf8" />
+            <circle cx="0" cy="0" r="22" fill={paperColor} />
           </svg>
 
-          {/* Centro */}
           <Box
             sx={{
               position: 'absolute',
@@ -93,33 +84,30 @@ export function DonutChart({ title, segments, centerLabel = 'total' }: DonutChar
             }}
           >
             <Typography variant="caption">{centerLabel}</Typography>
-            <Typography
-              sx={{
-                fontFamily: '"Fraunces", Georgia, serif',
-                fontWeight: 500,
-                fontSize: { xs: '0.875rem', sm: '1.125rem' },
-                lineHeight: 1.1,
-                letterSpacing: '-0.01em',
-                fontFeatureSettings: '"tnum" 1',
-                color: 'text.primary',
-              }}
-            >
-              {fmtMoney(total)}
+            <Typography variant="displayXs" component="div" color="text.primary">
+              {formatMoney(total, 'BRL')}
             </Typography>
           </Box>
         </Box>
 
-        {/* Legenda */}
-        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0.75 }}>
-          {segments.slice(0, 5).map(seg => {
+        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {segments.slice(0, 5).map((seg) => {
             const pct = total > 0 ? (seg.value / total) * 100 : 0
             return (
-              <Box key={seg.id} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: seg.color, flexShrink: 0 }} />
-                <Typography sx={{ flex: 1, fontSize: '0.8125rem', color: 'text.secondary' }}>
+              <Box key={seg.id} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box
+                  sx={(t) => ({
+                    width: 8,
+                    height: 8,
+                    borderRadius: t.shape.rounded.circle,
+                    bgcolor: seg.color,
+                    flexShrink: 0,
+                  })}
+                />
+                <Typography variant="labelSm" color="text.secondary" sx={{ flex: 1 }}>
                   {seg.label}
                 </Typography>
-                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 600, fontFeatureSettings: '"tnum" 1', color: 'text.primary' }}>
+                <Typography variant="amountSm" color="text.primary">
                   {pct.toFixed(0)}%
                 </Typography>
               </Box>

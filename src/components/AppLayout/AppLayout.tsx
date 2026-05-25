@@ -6,27 +6,27 @@ import { BottomTabBar } from '../BottomTabBar/BottomTabBar'
 import { Sidebar } from '../Sidebar/Sidebar'
 
 const PATH_TO_SCREEN: Record<string, NavScreen> = {
-  '/':             'dashboard',
+  '/': 'dashboard',
   '/transactions': 'transactions',
-  '/reports':      'reports',
-  '/categories':   'categories',
-  '/settings':     'settings',
+  '/reports': 'reports',
+  '/categories': 'categories',
+  '/settings': 'settings',
 }
 
 const SCREEN_TO_PATH: Record<NavScreen, string> = {
-  dashboard:    '/',
+  dashboard: '/',
   transactions: '/transactions',
-  reports:      '/reports',
-  categories:   '/categories',
-  settings:     '/settings',
+  reports: '/reports',
+  categories: '/categories',
+  settings: '/settings',
 }
 
 const SCREEN_TITLES: Record<NavScreen, string> = {
-  dashboard:    'seu mês até agora',
+  dashboard: 'seu mês até agora',
   transactions: 'movimentações',
-  reports:      'relatórios',
-  categories:   'categorias',
-  settings:     'ajustes',
+  reports: 'relatórios',
+  categories: 'categorias',
+  settings: 'ajustes',
 }
 
 interface AppLayoutProps {
@@ -59,28 +59,21 @@ export function AppLayout({ userName, userEmail, onAdd }: AppLayoutProps) {
         sx={{
           flex: 1,
           minWidth: 0,
-          p: { xs: 2, sm: 3, md: 4 },
-          pb: { xs: '108px', md: 4 },
+          p: { xs: 4, sm: 5, md: 6 },
+          pb: { xs: '108px', md: 6 },
         }}
       >
         <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+            >
               <Box>
-                <Typography
-                  sx={{
-                    fontFamily: '"Fraunces", Georgia, serif',
-                    fontWeight: 500,
-                    fontSize: { xs: '1.5rem', sm: '1.75rem' },
-                    letterSpacing: '-0.015em',
-                    color: 'text.primary',
-                    lineHeight: 1.1,
-                  }}
-                >
+                <Typography variant="pageTitle" component="h1" color="text.primary">
                   {SCREEN_TITLES[screen]}
                 </Typography>
                 {screen === 'dashboard' && (
-                  <Typography variant="caption" sx={{ mt: 0.5, display: 'block' }}>
+                  <Typography variant="caption" sx={{ mt: 1, display: 'block' }}>
                     maio · sincronizado há 2 minutos
                   </Typography>
                 )}
@@ -88,23 +81,22 @@ export function AppLayout({ userName, userEmail, onAdd }: AppLayoutProps) {
               <Box
                 component="button"
                 onClick={onAdd}
-                sx={{
+                sx={(t) => ({
                   display: { xs: 'none', md: 'inline-flex' },
                   alignItems: 'center',
-                  gap: 0.75,
+                  gap: 2,
                   height: 44,
-                  px: 2.25,
-                  borderRadius: '12px',
+                  px: 4,
+                  borderRadius: t.shape.rounded.md,
                   border: 0,
                   bgcolor: 'primary.main',
                   color: 'primary.contrastText',
-                  fontFamily: '"Inter", system-ui, sans-serif',
                   fontSize: '0.875rem',
                   fontWeight: 600,
                   cursor: 'pointer',
                   '&:hover': { bgcolor: 'primary.dark' },
                   '&:active': { transform: 'scale(0.98)' },
-                }}
+                })}
               >
                 + Adicionar
               </Box>

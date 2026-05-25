@@ -3,6 +3,7 @@ import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import type { LucideIcon } from 'lucide-react'
 import { useFormatDateTransactions } from '../../hooks/useFormatDateTransactions.ts'
+import { useTranslate } from '../../hooks/useTranslate.ts'
 
 interface IncomeRowProps {
   name: string
@@ -15,13 +16,6 @@ interface IncomeRowProps {
   showDivider?: boolean
 }
 
-function fmtMoney(n: number) {
-  return `+R$ ${n.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
-}
-
 export function IncomeRow({
   name,
   category,
@@ -29,48 +23,37 @@ export function IncomeRow({
   date,
   amount,
   icon: Icon,
-  iconColor = '#3d6b4f',
+  iconColor = 'success.main',
   showDivider = true,
 }: IncomeRowProps) {
   const { fmtDate } = useFormatDateTransactions()
+  const { formatMoney } = useTranslate()
   const dateFormatted = fmtDate(date)
 
   return (
     <>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '14px',
-          py: '12px',
-        }}
-      >
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, py: 3 }}>
         <Box
-          sx={{
+          sx={(t) => ({
             width: 36,
             height: 36,
-            borderRadius: '10px',
+            borderRadius: t.shape.rounded.navItem,
             bgcolor: iconColor,
-            color: '#fff',
+            color: 'common.white',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-          }}
+          })}
         >
           <Icon size={18} strokeWidth={2} />
         </Box>
 
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography
-            sx={{
-              fontSize: '0.875rem',
-              fontWeight: 600,
-              color: 'text.primary',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
+            variant="rowTitle"
+            component="div"
+            sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
           >
             {name}
           </Typography>
@@ -79,17 +62,8 @@ export function IncomeRow({
           </Typography>
         </Box>
 
-        <Typography
-          sx={{
-            fontFamily: '"Inter", system-ui, sans-serif',
-            fontWeight: 600,
-            fontSize: '0.875rem',
-            fontFeatureSettings: '"tnum" 1',
-            color: 'success.main',
-            flexShrink: 0,
-          }}
-        >
-          {fmtMoney(amount)}
+        <Typography variant="rowAmount" component="div" color="success.main" sx={{ flexShrink: 0 }}>
+          +{formatMoney(amount, 'BRL')}
         </Typography>
       </Box>
 

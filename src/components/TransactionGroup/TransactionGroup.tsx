@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
+import { useTheme } from '@mui/material/styles'
 import { Inbox } from 'lucide-react'
 import { ExpenseRow } from '../ExpenseRow/ExpenseRow'
 import { IncomeRow } from '../IncomeRow/IncomeRow'
@@ -19,7 +20,6 @@ export interface Transaction {
 }
 
 interface TransactionGroupProps {
-  /** Transações já agrupadas por label de dia (ex: 'hoje', 'ontem', '20 mai') */
   groups: { dayLabel: string; transactions: Transaction[] }[]
   empty?: string
 }
@@ -28,20 +28,22 @@ export function TransactionGroup({
   groups,
   empty = 'nenhuma transação por aqui',
 }: TransactionGroupProps) {
-  if (groups.length === 0 || groups.every(g => g.transactions.length === 0)) {
+  const theme = useTheme()
+
+  if (groups.length === 0 || groups.every((g) => g.transactions.length === 0)) {
     return (
       <Card>
         <CardContent
           sx={{
-            py: '48px !important',
+            py: 7,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 1,
+            gap: 2,
           }}
         >
-          <Inbox size={32} color="#807a6c" strokeWidth={1.5} />
-          <Typography variant="body2" sx={{ color: 'text.disabled' }}>
+          <Inbox size={32} color={theme.palette.text.disabled} strokeWidth={1.5} />
+          <Typography variant="body2" color="text.disabled">
             {empty}
           </Typography>
         </CardContent>
@@ -50,7 +52,7 @@ export function TransactionGroup({
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       {groups.map(({ dayLabel, transactions }) => (
         <Box key={dayLabel}>
           <Typography
@@ -58,14 +60,14 @@ export function TransactionGroup({
             sx={{
               textTransform: 'lowercase',
               display: 'block',
-              mb: 0.75,
-              pl: 0.5,
+              mb: 2,
+              pl: 1,
             }}
           >
             {dayLabel}
           </Typography>
           <Card>
-            <CardContent sx={{ p: { xs: '4px 16px 8px !important', sm: '4px 24px 8px !important' } }}>
+            <CardContent sx={{ p: { xs: '4px 16px 8px', sm: '4px 24px 8px' } }}>
               {transactions.map((t, idx) => {
                 const isLast = idx === transactions.length - 1
                 const props = {
@@ -78,9 +80,11 @@ export function TransactionGroup({
                   iconColor: t.iconColor,
                   showDivider: !isLast,
                 }
-                return t.amount > 0
-                  ? <IncomeRow key={t.id} {...props} />
-                  : <ExpenseRow key={t.id} {...props} />
+                return t.amount > 0 ? (
+                  <IncomeRow key={t.id} {...props} />
+                ) : (
+                  <ExpenseRow key={t.id} {...props} />
+                )
               })}
             </CardContent>
           </Card>

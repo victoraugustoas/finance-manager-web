@@ -3,55 +3,41 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
+import { useTheme } from '@mui/material/styles'
 import type { CategoryBreakdownType } from '../../../../network/repository/ReportingRepository/dtos/index.ts'
 import { useCategoryBreakdown } from './hooks/useCategoryBreakdown.ts'
 import { useTranslate } from '../../../../hooks/useTranslate.ts'
-
-const CATEGORY_COLORS = [
-  '#3d6b4f',
-  '#8b5a2b',
-  '#5a6b8b',
-  '#8b2e2e',
-  '#6b5a8b',
-  '#2e8b5a',
-  '#5a8b6b',
-  '#8b7a2b',
-]
 
 export interface CategoryBreakdownProps {
   type: CategoryBreakdownType
   onSeeAll?: () => void
 }
 
-function fmtMoney(n: number) {
-  return `R$ ${n.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
-}
-
 export function CategoryBreakdown({ type, onSeeAll }: CategoryBreakdownProps) {
   const { categories, isLoading } = useCategoryBreakdown(type)
-  const { t } = useTranslate('dashboard')
+  const { t, formatMoney } = useTranslate('dashboard')
+  const theme = useTheme()
+  const categoryColorList = Object.values(theme.palette.categoryColors)
 
   return (
     <Card sx={{ height: '100%' }}>
-      <CardContent sx={{ p: { xs: '16px !important', sm: '24px !important' } }}>
+      <CardContent sx={{ p: { xs: 4, sm: 5 } }}>
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'baseline',
-            mb: 2,
+            mb: 4,
           }}
         >
-          <Typography variant="h2" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+          <Typography variant="h2">
             {type === 'EXPENSE'
               ? t('category_breakdown_expenses')
               : t('category_breakdown_incomes')}
           </Typography>
           {onSeeAll && (
-            <Box
+            <Typography
+              variant="labelSm"
               component="button"
               onClick={onSeeAll}
               sx={{
@@ -59,42 +45,39 @@ export function CategoryBreakdown({ type, onSeeAll }: CategoryBreakdownProps) {
                 border: 0,
                 cursor: 'pointer',
                 color: 'text.secondary',
-                fontFamily: '"Inter", system-ui, sans-serif',
-                fontSize: '0.8125rem',
-                fontWeight: 500,
                 p: 0,
                 '&:hover': { color: 'text.primary' },
               }}
             >
               Ver tudo →
-            </Box>
+            </Typography>
           )}
         </Box>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.75 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {isLoading
             ? Array.from({ length: 3 }).map((_, i) => (
                 <Box
                   key={i}
                   sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Skeleton
                       variant="circular"
                       width={8}
                       height={8}
-                      sx={{ bgcolor: '#ede8de', flexShrink: 0 }}
+                      sx={{ bgcolor: 'background.surfaceInset', flexShrink: 0 }}
                     />
                     <Skeleton
                       variant="text"
                       width={100}
-                      sx={{ fontSize: '0.8125rem', bgcolor: '#ede8de' }}
+                      sx={(t) => ({ ...t.typography.labelSm, bgcolor: 'background.surfaceInset' })}
                     />
                   </Box>
                   <Skeleton
                     variant="text"
                     width={70}
-                    sx={{ fontSize: '0.8125rem', bgcolor: '#ede8de' }}
+                    sx={(t) => ({ ...t.typography.amountSm, bgcolor: 'background.surfaceInset' })}
                   />
                 </Box>
               ))
@@ -103,29 +86,21 @@ export function CategoryBreakdown({ type, onSeeAll }: CategoryBreakdownProps) {
                   key={name}
                   sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                 >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Box
-                      sx={{
+                      sx={(t) => ({
                         width: 8,
                         height: 8,
-                        borderRadius: '50%',
-                        bgcolor: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
+                        borderRadius: t.shape.rounded.circle,
+                        bgcolor: categoryColorList[index % categoryColorList.length],
                         flexShrink: 0,
-                      }}
+                      })}
                     />
-                    <Typography sx={{ fontSize: '0.8125rem', color: 'text.primary' }}>
+                    <Typography variant="labelSm" color="text.primary">
                       {name}
                     </Typography>
                   </Box>
-                  <Typography
-                    sx={{
-                      fontSize: '0.8125rem',
-                      fontWeight: 600,
-                      fontFeatureSettings: '"tnum" 1',
-                    }}
-                  >
-                    {fmtMoney(total)}
-                  </Typography>
+                  <Typography variant="amountSm">{formatMoney(total, 'BRL')}</Typography>
                 </Box>
               ))}
         </Box>

@@ -10,10 +10,10 @@ export function ListAccounts() {
     <Box
       sx={{
         display: 'flex',
-        gap: 2,
+        gap: 4,
         overflowX: { xs: 'auto', sm: 'auto' },
         flexWrap: { xs: 'nowrap' },
-        pb: { xs: 0.5, sm: 0 },
+        pb: { xs: 1, sm: 0 },
       }}
     >
       {isLoading
@@ -22,13 +22,13 @@ export function ListAccounts() {
               key={i}
               variant="rounded"
               animation="wave"
-              sx={{
+              sx={(t) => ({
                 width: { xs: 180, sm: 280 },
                 height: { xs: 96, sm: 110 },
                 flexShrink: 0,
-                borderRadius: { xs: '16px', sm: '12px' },
-                bgcolor: '#ece5d6',
-              }}
+                borderRadius: t.shape.rounded.lg,
+                bgcolor: 'background.surfaceInset',
+              })}
             />
           ))
         : accounts.map((a) => (

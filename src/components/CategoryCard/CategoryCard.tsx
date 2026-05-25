@@ -5,6 +5,7 @@ import LinearProgress from '@mui/material/LinearProgress'
 import Typography from '@mui/material/Typography'
 import type { LucideIcon } from 'lucide-react'
 import { MoreHorizontal } from 'lucide-react'
+import { useTranslate } from '../../hooks/useTranslate.ts'
 
 interface CategoryCardProps {
   name: string
@@ -16,13 +17,6 @@ interface CategoryCardProps {
   onOptions?: () => void
 }
 
-function fmtMoney(n: number) {
-  return `R$ ${n.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
-}
-
 export function CategoryCard({
   name,
   icon: Icon,
@@ -32,6 +26,7 @@ export function CategoryCard({
   isIncome = false,
   onOptions,
 }: CategoryCardProps) {
+  const { formatMoney } = useTranslate()
   const pct = budget ? Math.min((spent / budget) * 100, 100) : 0
   const isOver = budget ? spent > budget : false
 
@@ -43,43 +38,45 @@ export function CategoryCard({
         '&:hover': { boxShadow: 3 },
       }}
     >
-      <CardContent sx={{ p: { xs: '16px !important', sm: '20px !important' } }}>
-        {/* Header: ícone + nome + opções */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.75 }}>
+      <CardContent sx={{ p: { xs: 4, sm: 5 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 4 }}>
           <Box
-            sx={{
+            sx={(t) => ({
               width: 40,
               height: 40,
-              borderRadius: '12px',
+              borderRadius: t.shape.rounded.md,
               bgcolor: iconColor,
-              color: '#fff',
+              color: 'common.white',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
-            }}
+            })}
           >
             <Icon size={20} strokeWidth={2} />
           </Box>
 
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography sx={{ fontSize: '0.9375rem', fontWeight: 600, color: 'text.primary' }}>
+            <Typography variant="rowTitle" component="div">
               {name}
             </Typography>
             <Typography variant="caption">
               {isIncome
                 ? 'receita'
                 : budget
-                ? `limite ${fmtMoney(budget)}`
-                : 'sem limite'}
+                  ? `limite ${formatMoney(budget, 'BRL')}`
+                  : 'sem limite'}
             </Typography>
           </Box>
 
           {onOptions && (
             <Box
               component="button"
-              onClick={e => { e.stopPropagation(); onOptions() }}
-              sx={{
+              onClick={(e: React.MouseEvent) => {
+                e.stopPropagation()
+                onOptions()
+              }}
+              sx={(t) => ({
                 width: 32,
                 height: 32,
                 border: 0,
@@ -89,33 +86,38 @@ export function CategoryCard({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderRadius: '8px',
+                borderRadius: t.shape.rounded.icon,
                 '&:hover': { bgcolor: 'rgba(26,24,21,0.04)', color: 'text.secondary' },
-              }}
+              })}
             >
               <MoreHorizontal size={16} strokeWidth={2} />
             </Box>
           )}
         </Box>
 
-        {/* Valor + barra de progresso (ou só valor para receita/sem limite) */}
         {budget ? (
           <>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mb: 0.75 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'baseline',
+                mb: 2,
+              }}
+            >
               <Typography
-                sx={{
-                  fontFamily: '"Inter", system-ui, sans-serif',
-                  fontWeight: 600,
-                  fontSize: '1.125rem',
-                  fontFeatureSettings: '"tnum" 1',
-                  color: isOver ? 'error.main' : 'text.primary',
-                }}
+                variant="amountMd"
+                component="div"
+                color={isOver ? 'error.main' : 'text.primary'}
               >
-                {fmtMoney(spent)}
+                {formatMoney(spent, 'BRL')}
               </Typography>
               <Typography
                 variant="caption"
-                sx={{ color: isOver ? 'error.main' : 'text.disabled', fontFeatureSettings: '"tnum" 1' }}
+                sx={{
+                  color: isOver ? 'error.main' : 'text.disabled',
+                  fontFeatureSettings: '"tnum" 1',
+                }}
               >
                 {pct.toFixed(0)}% usado
               </Typography>
@@ -123,24 +125,16 @@ export function CategoryCard({
             <LinearProgress
               variant="determinate"
               value={pct}
-              sx={{
-                '& .MuiLinearProgress-bar': {
-                  bgcolor: isOver ? 'error.main' : iconColor,
-                },
-              }}
+              sx={{ '& .MuiLinearProgress-bar': { bgcolor: isOver ? 'error.main' : iconColor } }}
             />
           </>
         ) : (
           <Typography
-            sx={{
-              fontFamily: '"Inter", system-ui, sans-serif',
-              fontWeight: 600,
-              fontSize: '1.125rem',
-              fontFeatureSettings: '"tnum" 1',
-              color: isIncome ? 'success.main' : 'text.primary',
-            }}
+            variant="amountMd"
+            component="div"
+            color={isIncome ? 'success.main' : 'text.primary'}
           >
-            {fmtMoney(spent)}
+            {formatMoney(spent, 'BRL')}
           </Typography>
         )}
       </CardContent>

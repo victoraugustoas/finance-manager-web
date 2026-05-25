@@ -4,6 +4,7 @@ import CardContent from '@mui/material/CardContent'
 import Divider from '@mui/material/Divider'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
+import { useTheme } from '@mui/material/styles'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowDownToLine, ArrowLeftRight, ArrowUpFromLine } from 'lucide-react'
 import { ExpenseRow } from '../../../../components/ExpenseRow/ExpenseRow.tsx'
@@ -28,25 +29,26 @@ export interface TransactionListProps {
 export function TransactionList({ type, onSeeAll }: TransactionListProps) {
   const result = useTransactionList(type)
   const { t } = useTranslate('dashboard')
+  const theme = useTheme()
 
   const TYPE_CONFIG: Record<TransactionListType, TypeConfig> = {
     income: {
       label: t('last_incomes'),
       icon: ArrowDownToLine,
-      iconBg: '#3d6b4f',
-      amountColor: '#2d6a4f',
+      iconBg: theme.palette.success.main,
+      amountColor: theme.palette.success.main,
     },
     expense: {
       label: t('last_expenses'),
       icon: ArrowUpFromLine,
-      iconBg: '#c46a4e',
-      amountColor: '#1a1a18',
+      iconBg: theme.palette.error.main,
+      amountColor: theme.palette.text.primary,
     },
     transfer: {
       label: t('last_transfers'),
       icon: ArrowLeftRight,
-      iconBg: '#4f7a9b',
-      amountColor: '#5c5a54',
+      iconBg: theme.palette.categoryColors.transport,
+      amountColor: theme.palette.text.secondary,
     },
   }
   const config = TYPE_CONFIG[type]
@@ -97,20 +99,19 @@ export function TransactionList({ type, onSeeAll }: TransactionListProps) {
 
   return (
     <Card sx={{ height: '100%' }}>
-      <CardContent sx={{ p: { xs: '16px !important', sm: '24px !important' } }}>
+      <CardContent sx={{ p: { xs: 4, sm: 5 } }}>
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'baseline',
-            mb: 2,
+            mb: 4,
           }}
         >
-          <Typography variant="h2" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-            {config.label}
-          </Typography>
+          <Typography variant="h2">{config.label}</Typography>
           {onSeeAll && (
-            <Box
+            <Typography
+              variant="labelSm"
               component="button"
               onClick={onSeeAll}
               sx={{
@@ -118,48 +119,53 @@ export function TransactionList({ type, onSeeAll }: TransactionListProps) {
                 border: 0,
                 cursor: 'pointer',
                 color: 'text.secondary',
-                fontFamily: '"Inter", system-ui, sans-serif',
-                fontSize: '0.8125rem',
-                fontWeight: 500,
                 p: 0,
                 '&:hover': { color: 'text.primary' },
               }}
             >
               Ver tudo →
-            </Box>
+            </Typography>
           )}
         </Box>
 
         {result.isLoading
           ? Array.from({ length: 3 }).map((_, i) => (
               <Box key={i}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: '14px', py: '12px' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, py: 3 }}>
                   <Skeleton
                     variant="rounded"
                     width={36}
                     height={36}
                     animation="wave"
-                    sx={{ borderRadius: '10px', bgcolor: '#ede8de', flexShrink: 0 }}
+                    sx={(t) => ({
+                      borderRadius: t.shape.rounded.navItem,
+                      bgcolor: 'background.surfaceInset',
+                      flexShrink: 0,
+                    })}
                   />
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Skeleton
                       variant="text"
                       width="55%"
                       animation="wave"
-                      sx={{ fontSize: '0.875rem', bgcolor: '#ede8de' }}
+                      sx={(t) => ({ ...t.typography.body2, bgcolor: 'background.surfaceInset' })}
                     />
                     <Skeleton
                       variant="text"
                       width="40%"
                       animation="wave"
-                      sx={{ fontSize: '0.75rem', bgcolor: '#ede8de' }}
+                      sx={(t) => ({ ...t.typography.caption, bgcolor: 'background.surfaceInset' })}
                     />
                   </Box>
                   <Skeleton
                     variant="text"
                     width={72}
                     animation="wave"
-                    sx={{ fontSize: '0.875rem', bgcolor: '#ede8de', flexShrink: 0 }}
+                    sx={(t) => ({
+                      ...t.typography.body2,
+                      bgcolor: 'background.surfaceInset',
+                      flexShrink: 0,
+                    })}
                   />
                 </Box>
                 {i < 2 && <Divider />}

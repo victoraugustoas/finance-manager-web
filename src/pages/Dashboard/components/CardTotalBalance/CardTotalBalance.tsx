@@ -3,21 +3,16 @@ import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { useTotalBalance } from './hooks/useTotalBalance.ts'
-
-function fmtMoney(n: number) {
-  return `R$ ${Math.abs(n).toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
-}
+import { useTranslate } from '../../../../hooks/useTranslate.ts'
 
 export function CardTotalBalance() {
   const { balance, isLoading } = useTotalBalance()
+  const { formatMoney } = useTranslate()
 
   return (
     <Card>
-      <CardContent sx={{ p: { xs: '20px !important', sm: '28px !important' } }}>
-        <Typography variant="caption" component="div" sx={{ mb: 0.5 }}>
+      <CardContent sx={{ p: { xs: 4, sm: 5 } }}>
+        <Typography variant="caption" component="div" sx={{ mb: 1 }}>
           saldo total
         </Typography>
 
@@ -25,22 +20,14 @@ export function CardTotalBalance() {
           <Skeleton
             variant="text"
             width="70%"
-            sx={{ fontSize: { xs: '2.625rem', sm: '3.5rem' }, bgcolor: '#ece5d6' }}
+            sx={(theme) => ({
+              ...theme.typography.displayMoney,
+              bgcolor: 'background.surfaceInset',
+            })}
           />
         ) : (
-          <Typography
-            component="div"
-            sx={{
-              fontFamily: '"Fraunces", Georgia, serif',
-              fontWeight: 500,
-              fontSize: { xs: '2.625rem', sm: '3.5rem' },
-              lineHeight: 1.05,
-              letterSpacing: '-0.02em',
-              color: 'text.primary',
-              fontFeatureSettings: '"tnum" 1, "cv11" 1',
-            }}
-          >
-            {fmtMoney(balance)}
+          <Typography variant="displayMoney" component="div" color="text.primary">
+            {formatMoney(balance, 'BRL')}
           </Typography>
         )}
       </CardContent>

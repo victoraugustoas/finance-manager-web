@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowLeftRight } from 'lucide-react'
 import { useFormatDateTransactions } from '../../hooks/useFormatDateTransactions.ts'
+import { useTranslate } from '../../hooks/useTranslate.ts'
 
 export interface TransferRowProps {
   name: string
@@ -16,13 +17,6 @@ export interface TransferRowProps {
   showDivider?: boolean
 }
 
-function fmtMoney(n: number) {
-  return `R$ ${n.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
-}
-
 export function TransferRow({
   name,
   from,
@@ -30,47 +24,37 @@ export function TransferRow({
   date,
   amount,
   icon: Icon = ArrowLeftRight,
-  iconColor = '#4f7a9b',
+  iconColor = 'categoryColors.transport',
   showDivider = true,
 }: TransferRowProps) {
   const { fmtDate } = useFormatDateTransactions()
+  const { formatMoney } = useTranslate()
   const dateFormatted = fmtDate(date)
+
   return (
     <>
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '14px',
-          py: '12px',
-        }}
-      >
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, py: 3 }}>
         <Box
-          sx={{
+          sx={(t) => ({
             width: 36,
             height: 36,
-            borderRadius: '10px',
+            borderRadius: t.shape.rounded.navItem,
             bgcolor: iconColor,
-            color: '#fff',
+            color: 'common.white',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-          }}
+          })}
         >
           <Icon size={18} strokeWidth={2} />
         </Box>
 
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography
-            sx={{
-              fontSize: '0.875rem',
-              fontWeight: 600,
-              color: 'text.primary',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
+            variant="rowTitle"
+            component="div"
+            sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
           >
             {name}
           </Typography>
@@ -80,15 +64,12 @@ export function TransferRow({
         </Box>
 
         <Typography
-          sx={{
-            fontWeight: 600,
-            fontSize: '0.875rem',
-            fontFeatureSettings: '"tnum" 1',
-            color: 'text.secondary',
-            flexShrink: 0,
-          }}
+          variant="rowAmount"
+          component="div"
+          color="text.secondary"
+          sx={{ flexShrink: 0 }}
         >
-          {fmtMoney(amount)}
+          {formatMoney(amount, 'BRL')}
         </Typography>
       </Box>
 
