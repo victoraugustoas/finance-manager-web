@@ -24,24 +24,35 @@ export function DonutChart({ title, segments, centerLabel = 'total' }: DonutChar
   const total = segments.reduce((s, seg) => s + seg.value, 0)
   const paperColor = theme.palette.background.paper
 
-  let cumulative = 0
-  const paths = segments.map((seg) => {
-    const pct = total > 0 ? seg.value / total : 0
-    const start = cumulative
-    cumulative += pct
-    const r = 40
-    const a1 = start * 2 * Math.PI
-    const a2 = cumulative * 2 * Math.PI
-    const x1 = r * Math.cos(a1)
-    const y1 = r * Math.sin(a1)
-    const x2 = r * Math.cos(a2)
-    const y2 = r * Math.sin(a2)
-    const large = pct > 0.5 ? 1 : 0
-    return {
-      ...seg,
-      d: `M 0 0 L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`,
-    }
-  })
+  const { paths } = segments.reduce<{
+    cumulative: number
+    paths: Array<DonutSegment & { d: string }>
+  }>(
+    (acc, seg) => {
+      const pct = total > 0 ? seg.value / total : 0
+      const start = acc.cumulative
+      const cumulative = start + pct
+      const r = 40
+      const a1 = start * 2 * Math.PI
+      const a2 = cumulative * 2 * Math.PI
+      const x1 = r * Math.cos(a1)
+      const y1 = r * Math.sin(a1)
+      const x2 = r * Math.cos(a2)
+      const y2 = r * Math.sin(a2)
+      const large = pct > 0.5 ? 1 : 0
+      return {
+        cumulative,
+        paths: [
+          ...acc.paths,
+          {
+            ...seg,
+            d: `M 0 0 L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`,
+          },
+        ],
+      }
+    },
+    { cumulative: 0, paths: [] },
+  )
 
   return (
     <Card sx={{ height: '100%' }}>

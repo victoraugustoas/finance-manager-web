@@ -3,9 +3,10 @@ import type {
   EstimatedBalanceResponseDto,
   ListAccountsItemResponseDto,
 } from './dtos'
+import type { GetAccountsParams } from './dtos/GetAccountsParams.ts'
 
 export abstract class AccountRepository {
-  abstract getAccounts(): Promise<ListAccountsItemResponseDto[]>
+  abstract getAccounts(params?: GetAccountsParams): Promise<ListAccountsItemResponseDto[]>
   abstract getEstimatedBalance(
     id: string,
     params?: EstimatedBalanceParams,

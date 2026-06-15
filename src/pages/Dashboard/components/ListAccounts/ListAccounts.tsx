@@ -32,7 +32,7 @@ export function ListAccounts() {
             />
           ))
         : accounts.map((a) => (
-            <CardAccount key={a.id} id={a.id} name={a.name} balance={a.actualBalance} />
+            <CardAccount key={a.id} id={a.id} name={a.name} balance={a.balance} />
           ))}
     </Box>
   )

@@ -7,23 +7,28 @@ import type {
   ListAccountsItemResponseDto,
 } from '../dtos/index.ts'
 import type { RepositoryWithCache } from '../../RepositoryWithCache.ts'
+import type { GetAccountsParams } from '../dtos/GetAccountsParams.ts'
 
 type AccountRepositoryOpts = {
-  getAccounts: []
+  getAccounts: [{ params: GetAccountsParams }]
   getEstimatedBalance: [{ id: string; params?: EstimatedBalanceParams }]
 }
 
 function buildQueryRepositoryAccount(method: keyof AccountRepository, opts: unknown[]) {
   switch (method) {
-    case 'getAccounts':
+    case 'getAccounts': {
+      const { params } = opts[0] as { params?: GetAccountsParams }
       return {
-        queryKey: ['accounts'],
+        queryKey: ['accounts', params?.endDate],
         queryFn: async () => {
-          const response = await fetch(`${Endpoints.BASE_URL}/accounts`)
+          const url = new URL(`${Endpoints.BASE_URL}/accounts`)
+          if (params?.endDate) url.searchParams.set('endDate', params.endDate)
+          const response = await fetch(url)
           const data = (await response.json()) as { accounts: ListAccountsItemResponseDto[] }
           return data.accounts
         },
       }
+    }
     case 'getEstimatedBalance': {
       const { id, params } = opts[0] as { id: string; params?: EstimatedBalanceParams }
       return {

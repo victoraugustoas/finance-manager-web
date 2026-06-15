@@ -1,12 +1,14 @@
-import { endOfMonth } from 'date-fns'
+import { useMonthlyDate } from '../../../hooks/useMonthlyDate.ts'
 import { useAccountRepository } from '../../../network/repository/AccountRepository/hook/useAccountRepository.ts'
 
 export function useEstimatedBalance(accountId: string) {
+  const { startDate, endDate } = useMonthlyDate()
+
   const { data, isLoading } = useAccountRepository('getEstimatedBalance', {
     id: accountId,
     params: {
-      startDate: new Date().toISOString(),
-      endDate: endOfMonth(new Date()).toISOString(),
+      startDate,
+      endDate,
     },
   })
 

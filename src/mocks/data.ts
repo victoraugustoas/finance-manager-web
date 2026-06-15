@@ -8,11 +8,17 @@ import {
   ShoppingCart,
   Utensils,
 } from 'lucide-react'
-import type { CategoryBreakdownItem } from '../pages/Dashboard/components/CategoryBreakdown/CategoryBreakdown'
 import type { CategoryTableRow } from '../components/CategoryTable/CategoryTable'
 import type { DonutSegment } from '../components/DonutChart/DonutChart'
 import type { Transaction } from '../components/TransactionGroup/TransactionGroup'
 import { categoryColors } from '../theme/pluma'
+
+type CategoryBreakdownItem = {
+  id: string
+  name: string
+  color: string
+  total: number
+}
 
 export const ACCOUNTS = [
   {

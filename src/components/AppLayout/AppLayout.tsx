@@ -3,7 +3,10 @@ import Typography from '@mui/material/Typography'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import type { NavScreen } from '../BottomTabBar/BottomTabBar'
 import { BottomTabBar } from '../BottomTabBar/BottomTabBar'
+import { MonthSelector } from '../MonthSelector/MonthSelector.tsx'
 import { Sidebar } from '../Sidebar/Sidebar'
+import { useMonthlyDate } from '../../hooks/useMonthlyDate.ts'
+import { useTranslate } from '../../hooks/useTranslate.ts'
 
 const PATH_TO_SCREEN: Record<string, NavScreen> = {
   '/': 'dashboard',
@@ -32,14 +35,16 @@ const SCREEN_TITLES: Record<NavScreen, string> = {
 interface AppLayoutProps {
   userName?: string
   userEmail?: string
-  onAdd: () => void
 }
 
-export function AppLayout({ userName, userEmail, onAdd }: AppLayoutProps) {
+export function AppLayout({ userName, userEmail }: AppLayoutProps) {
   const { pathname } = useLocation()
   const navigate = useNavigate()
+  const { selectedMonth } = useMonthlyDate()
+  const { formatDate } = useTranslate()
 
   const screen = PATH_TO_SCREEN[pathname] ?? 'dashboard'
+  const selectedMonthLabel = formatDate(selectedMonth, { formatStr: 'MMMM' })
 
   function handleNavigate(s: NavScreen) {
     navigate(SCREEN_TO_PATH[s])
@@ -66,7 +71,13 @@ export function AppLayout({ userName, userEmail, onAdd }: AppLayoutProps) {
         <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             <Box
-              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: { xs: 'stretch', sm: 'flex-start' },
+                flexDirection: { xs: 'column', sm: 'row' },
+                gap: 3,
+              }}
             >
               <Box>
                 <Typography variant="pageTitle" component="h1" color="text.primary">
@@ -74,32 +85,12 @@ export function AppLayout({ userName, userEmail, onAdd }: AppLayoutProps) {
                 </Typography>
                 {screen === 'dashboard' && (
                   <Typography variant="caption" sx={{ mt: 1, display: 'block' }}>
-                    maio · sincronizado há 2 minutos
+                    {selectedMonthLabel} · sincronizado há 2 minutos
                   </Typography>
                 )}
               </Box>
-              <Box
-                component="button"
-                onClick={onAdd}
-                sx={(t) => ({
-                  display: { xs: 'none', md: 'inline-flex' },
-                  alignItems: 'center',
-                  gap: 2,
-                  height: 44,
-                  px: 4,
-                  borderRadius: t.shape.rounded.md,
-                  border: 0,
-                  bgcolor: 'primary.main',
-                  color: 'primary.contrastText',
-                  fontSize: '0.875rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  '&:hover': { bgcolor: 'primary.dark' },
-                  '&:active': { transform: 'scale(0.98)' },
-                })}
-              >
-                + Adicionar
-              </Box>
+
+              {screen === 'dashboard' && <MonthSelector />}
             </Box>
 
             <Outlet />
@@ -107,7 +98,7 @@ export function AppLayout({ userName, userEmail, onAdd }: AppLayoutProps) {
         </Box>
       </Box>
 
-      <BottomTabBar current={screen} onNavigate={handleNavigate} onAdd={onAdd} />
+      <BottomTabBar current={screen} onNavigate={handleNavigate} />
     </Box>
   )
 }

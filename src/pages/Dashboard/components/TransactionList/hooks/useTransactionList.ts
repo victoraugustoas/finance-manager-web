@@ -1,7 +1,7 @@
-import { endOfMonth, startOfMonth } from 'date-fns'
 import type { TransactionRepository } from '../../../../../network/repository/TransactionRepository/TransactionRepository.ts'
 import { useTransactionRepository } from '../../../../../network/repository/TransactionRepository/hook/useTransactionRepository.ts'
 import { differenceInDays } from 'date-fns/differenceInDays'
+import { useMonthlyDate } from '../../../../../hooks/useMonthlyDate.ts'
 
 export type TransactionListType = 'income' | 'expense' | 'transfer'
 
@@ -32,10 +32,12 @@ export type TransactionListResult =
 
 export function useTransactionList(type: TransactionListType): TransactionListResult {
   const method = METHOD_MAP[type]
+  const { startDate, endDate } = useMonthlyDate()
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data, isLoading } = useTransactionRepository(method as any, {
-    startDate: startOfMonth(new Date()).toISOString(),
-    endDate: endOfMonth(new Date()).toISOString(),
+    startDate,
+    endDate,
   })
 
   const items = (data ?? [])

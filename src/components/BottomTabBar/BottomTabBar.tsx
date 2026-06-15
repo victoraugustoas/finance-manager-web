@@ -1,13 +1,12 @@
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
-import { LayoutDashboard, ArrowLeftRight, Plus, PieChart, User } from 'lucide-react'
+import { LayoutDashboard, ArrowLeftRight, PieChart, User } from 'lucide-react'
 
 export type NavScreen = 'dashboard' | 'transactions' | 'reports' | 'categories' | 'settings'
 
 interface BottomTabBarProps {
   current: NavScreen
   onNavigate: (screen: NavScreen) => void
-  onAdd: () => void
 }
 
 const tabs = [
@@ -17,7 +16,7 @@ const tabs = [
   { id: 'settings' as NavScreen, icon: User, label: 'perfil' },
 ]
 
-export function BottomTabBar({ current, onNavigate, onAdd }: BottomTabBarProps) {
+export function BottomTabBar({ current, onNavigate }: BottomTabBarProps) {
   return (
     <Box
       component="nav"
@@ -39,33 +38,7 @@ export function BottomTabBar({ current, onNavigate, onAdd }: BottomTabBarProps) 
         zIndex: 1200,
       })}
     >
-      {tabs.slice(0, 2).map((tab) => (
-        <TabButton key={tab.id} tab={tab} active={current === tab.id} onNavigate={onNavigate} />
-      ))}
-
-      <Box
-        component="button"
-        onClick={onAdd}
-        sx={(t) => ({
-          width: 52,
-          height: 52,
-          borderRadius: t.shape.rounded.lg,
-          bgcolor: 'primary.main',
-          color: 'primary.contrastText',
-          border: 0,
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 6px 14px -4px rgba(61,107,79,0.5)',
-          transition: 'transform 120ms cubic-bezier(0.22,1,0.36,1)',
-          '&:active': { transform: 'scale(0.95)' },
-        })}
-      >
-        <Plus size={22} strokeWidth={2} />
-      </Box>
-
-      {tabs.slice(2).map((tab) => (
+      {tabs.map((tab) => (
         <TabButton key={tab.id} tab={tab} active={current === tab.id} onNavigate={onNavigate} />
       ))}
     </Box>
