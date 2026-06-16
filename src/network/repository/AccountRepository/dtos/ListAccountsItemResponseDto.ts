@@ -3,5 +3,9 @@ export interface ListAccountsItemResponseDto {
   name: string
   balance: number
   openingBalance: number
-  actualBalance: number
+  estimatedBalance: number
+}
+
+export interface ListAccountsParams {
+  endDate: string
 }

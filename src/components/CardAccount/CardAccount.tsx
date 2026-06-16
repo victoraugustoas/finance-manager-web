@@ -2,16 +2,15 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Divider from '@mui/material/Divider'
-import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { useEstimatedBalance } from './hooks/useEstimatedBalance.ts'
 
 export interface CardAccountProps {
   id: string
   name: string
   balance: number
+  estimatedBalance: number
 }
 
 function fmtMoney(n: number) {
@@ -21,9 +20,7 @@ function fmtMoney(n: number) {
   })}`
 }
 
-function CardAccountMobile({ id, name, balance }: CardAccountProps) {
-  const { estimatedBalance, isLoading } = useEstimatedBalance(id)
-
+function CardAccountMobile({ name, balance, estimatedBalance }: CardAccountProps) {
   return (
     <Card
       sx={{
@@ -61,21 +58,13 @@ function CardAccountMobile({ id, name, balance }: CardAccountProps) {
           {fmtMoney(balance)}
         </Typography>
 
-        {isLoading ? (
-          <Skeleton
-            variant="text"
-            width={80}
-            sx={{ fontSize: '0.6875rem', mt: 0.25, bgcolor: '#ece5d6' }}
-          />
-        ) : (
-          <Typography
-            variant="caption"
-            component="div"
-            sx={{ mt: 0.25, color: 'text.disabled', fontSize: '0.6875rem' }}
-          >
-            {fmtMoney(estimatedBalance)}
-          </Typography>
-        )}
+        <Typography
+          variant="caption"
+          component="div"
+          sx={{ mt: 0.25, color: 'text.disabled', fontSize: '0.6875rem' }}
+        >
+          {fmtMoney(estimatedBalance)}
+        </Typography>
       </CardContent>
     </Card>
   )
