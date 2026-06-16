@@ -1,41 +1,27 @@
 import { useQuery } from '@tanstack/react-query'
 import { Endpoints } from '../../../endpoints/endpoints.ts'
 import type { AccountRepository } from '../AccountRepository.ts'
-import type {
-  EstimatedBalanceParams,
-  EstimatedBalanceResponseDto,
-  ListAccountsItemResponseDto,
-} from '../dtos/index.ts'
+import type { ListAccountsItemResponseDto, ListAccountsParams } from '../dtos/index.ts'
 import type { RepositoryWithCache } from '../../RepositoryWithCache.ts'
 
 type AccountRepositoryOpts = {
-  getAccounts: []
-  getEstimatedBalance: [{ id: string; params?: EstimatedBalanceParams }]
+  getAccounts: [{ params: ListAccountsParams }]
 }
 
 function buildQueryRepositoryAccount(method: keyof AccountRepository, opts: unknown[]) {
   switch (method) {
-    case 'getAccounts':
+    case 'getAccounts': {
+      const { params } = opts[0] as { params: ListAccountsParams }
       return {
-        queryKey: ['accounts'],
+        queryKey: ['reporting', 'accounts', params],
         queryFn: async () => {
-          const response = await fetch(`${Endpoints.BASE_URL}/accounts`)
+          const url = new URL(`${Endpoints.BASE_URL}/reporting/accounts`)
+          url.searchParams.set('endDate', params.endDate)
+          const response = await fetch(url)
           const data = (await response.json()) as { accounts: ListAccountsItemResponseDto[] }
           return data.accounts
         },
-      }
-    case 'getEstimatedBalance': {
-      const { id, params } = opts[0] as { id: string; params?: EstimatedBalanceParams }
-      return {
-        queryKey: ['accounts', id, 'estimated-balance', params],
-        queryFn: async () => {
-          const url = new URL(`${Endpoints.BASE_URL}/accounts/${id}/estimated-balance`)
-          if (params?.startDate) url.searchParams.set('startDate', params.startDate)
-          if (params?.endDate) url.searchParams.set('endDate', params.endDate)
-          const response = await fetch(url)
-          return (await response.json()) as EstimatedBalanceResponseDto
-        },
-        enabled: !!id,
+        enabled: !!params.endDate,
       }
     }
     default:
