@@ -10,10 +10,8 @@ export function ListAccounts() {
     <Box
       sx={{
         display: 'flex',
-        gap: 4,
-        overflowX: { xs: 'auto', sm: 'auto' },
-        flexWrap: { xs: 'nowrap' },
-        pb: { xs: 1, sm: 0 },
+        flexDirection: 'column',
+        gap: 2,
       }}
     >
       {isLoading
@@ -23,9 +21,8 @@ export function ListAccounts() {
               variant="rounded"
               animation="wave"
               sx={(t) => ({
-                width: { xs: 180, sm: 280 },
-                height: { xs: 96, sm: 110 },
-                flexShrink: 0,
+                width: '100%',
+                height: { xs: 88, sm: 74 },
                 borderRadius: t.shape.rounded.lg,
                 bgcolor: 'background.surfaceInset',
               })}
