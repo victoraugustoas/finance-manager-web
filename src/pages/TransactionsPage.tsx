@@ -1,9 +1,12 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
+import { Plus } from 'lucide-react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { FilterBar, type TransactionFilter } from '../components/FilterBar/FilterBar'
 import { MonthSelector } from '../components/MonthSelector/MonthSelector.tsx'
 import { TransactionGroup } from '../components/TransactionGroup/TransactionGroup'
@@ -46,13 +49,30 @@ function SummaryCard({
 }
 
 export function TransactionsPage() {
+  const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<TransactionFilter>('all')
   const { groups, summary, isLoading } = useStatementController(query, filter)
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: { sm: 'flex-end' } }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: { xs: 'stretch', sm: 'center' },
+          flexDirection: { xs: 'column', sm: 'row' },
+          gap: 2,
+        }}
+      >
+        <Button
+          variant="contained"
+          startIcon={<Plus size={18} />}
+          onClick={() => navigate('/transactions/new')}
+          sx={{ alignSelf: { xs: 'stretch', sm: 'center' } }}
+        >
+          nova movimentação
+        </Button>
         <MonthSelector />
       </Box>
 

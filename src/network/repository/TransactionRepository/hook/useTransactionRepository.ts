@@ -1,10 +1,12 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Endpoints } from '../../../endpoints/endpoints.ts'
 import type { TransactionRepository } from '../TransactionRepository.ts'
 import type {
   ListExpenseItemResponseDto,
   ListIncomeItemResponseDto,
   ListTransferItemResponseDto,
+  RegisterExpenseRequestDto,
+  RegisterIncomeRequestDto,
   TransactionParams,
 } from '../dtos/index.ts'
 import type { RepositoryWithCache } from '../../RepositoryWithCache.ts'
@@ -14,6 +16,7 @@ type TransactionRepositoryOpts = {
   getIncomes: [params?: TransactionParams]
   getTransfers: [params?: TransactionParams]
   registerNewExpense: []
+  registerNewIncome: []
 }
 
 type QueryConfig = { queryKey: unknown[]; queryFn: () => Promise<unknown>; enabled?: boolean }
@@ -22,6 +25,19 @@ type MethodConfig = QueryConfig | MutationConfig
 
 function isMutation(config: MethodConfig): config is MutationConfig {
   return 'mutationFn' in config
+}
+
+async function postJson(path: string, variables: unknown): Promise<void> {
+  const response = await fetch(`${Endpoints.BASE_URL}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(variables),
+  })
+
+  if (!response.ok) {
+    const message = await response.text()
+    throw new Error(message || 'Erro ao cadastrar movimentação')
+  }
 }
 
 function createTransactionsQueryConfig<T>(
@@ -44,7 +60,7 @@ function createTransactionsQueryConfig<T>(
   }
 }
 
-function buildConfig(method: keyof TransactionRepository, opts: unknown[]): MethodConfig {
+function buildConfig(method: keyof TransactionRepositoryOpts, opts: unknown[]): MethodConfig {
   switch (method) {
     case 'getExpenses': {
       const params = opts[0] as TransactionParams | undefined
@@ -76,11 +92,13 @@ function buildConfig(method: keyof TransactionRepository, opts: unknown[]): Meth
     case 'registerNewExpense':
       return {
         mutationFn: async (variables: unknown) => {
-          await fetch(`${Endpoints.BASE_URL}/transactions/expenses`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(variables),
-          })
+          await postJson('/transactions/expenses', variables as RegisterExpenseRequestDto)
+        },
+      }
+    case 'registerNewIncome':
+      return {
+        mutationFn: async (variables: unknown) => {
+          await postJson('/transactions/incomes', variables as RegisterIncomeRequestDto)
         },
       }
   }
@@ -92,10 +110,11 @@ const NOOP_QUERY: QueryConfig = {
   enabled: false,
 }
 
-export function useTransactionRepository<K extends keyof TransactionRepository>(
+export function useTransactionRepository<K extends keyof TransactionRepositoryOpts>(
   method: K,
   ...opts: TransactionRepositoryOpts[K]
 ): RepositoryWithCache<TransactionRepository>[K] {
+  const queryClient = useQueryClient()
   const config = buildConfig(method, opts as unknown[])
 
   const { data, isLoading, refetch } = useQuery(
@@ -103,9 +122,17 @@ export function useTransactionRepository<K extends keyof TransactionRepository>(
     (isMutation(config) ? NOOP_QUERY : config) as any,
   )
 
-  const { mutate, mutateAsync, isPending, error, reset } = useMutation(
-    isMutation(config) ? config : { mutationFn: async () => {} },
-  )
+  const { mutate, mutateAsync, isPending, error, reset } = useMutation({
+    ...(isMutation(config) ? config : { mutationFn: async () => {} }),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['transactions'] }),
+        queryClient.invalidateQueries({ queryKey: ['statement'] }),
+        queryClient.invalidateQueries({ queryKey: ['accounts'] }),
+        queryClient.invalidateQueries({ queryKey: ['category-breakdown'] }),
+      ])
+    },
+  })
 
   if (isMutation(config)) {
     return {

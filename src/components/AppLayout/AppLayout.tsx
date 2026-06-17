@@ -43,7 +43,10 @@ export function AppLayout({ userName, userEmail }: AppLayoutProps) {
   const { selectedMonth } = useMonthlyDate()
   const { formatDate } = useTranslate()
 
-  const screen = PATH_TO_SCREEN[pathname] ?? 'dashboard'
+  const screen =
+    (Object.entries(PATH_TO_SCREEN).find(([path]) =>
+      path === '/' ? pathname === path : pathname.startsWith(path),
+    )?.[1] as NavScreen | undefined) ?? 'dashboard'
   const selectedMonthLabel = formatDate(selectedMonth, { formatStr: 'MMMM' })
 
   function handleNavigate(s: NavScreen) {
