@@ -21,7 +21,7 @@ function buildQueryRepositoryAccount(method: keyof AccountRepository, opts: unkn
       return {
         queryKey: ['accounts', params?.endDate],
         queryFn: async () => {
-          const url = new URL(`${Endpoints.BASE_URL}/accounts`)
+          const url = new URL(`${Endpoints.BASE_URL}/reporting/accounts`)
           if (params?.endDate) url.searchParams.set('endDate', params.endDate)
           const response = await fetch(url)
           const data = (await response.json()) as { accounts: ListAccountsItemResponseDto[] }

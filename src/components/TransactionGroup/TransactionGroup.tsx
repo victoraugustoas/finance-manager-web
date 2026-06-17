@@ -6,10 +6,12 @@ import { useTheme } from '@mui/material/styles'
 import { Inbox } from 'lucide-react'
 import { ExpenseRow } from '../ExpenseRow/ExpenseRow'
 import { IncomeRow } from '../IncomeRow/IncomeRow'
+import { TransferRow } from '../TransferRow/TransferRow'
 import type { LucideIcon } from 'lucide-react'
 
 export interface Transaction {
   id: string
+  kind?: 'INCOME' | 'EXPENSE' | 'TRANSFER'
   date: string
   name: string
   category: string
@@ -17,6 +19,8 @@ export interface Transaction {
   amount: number
   icon: LucideIcon
   iconColor: string
+  from?: string
+  to?: string
 }
 
 interface TransactionGroupProps {
@@ -80,6 +84,22 @@ export function TransactionGroup({
                   iconColor: t.iconColor,
                   showDivider: !isLast,
                 }
+                if (t.kind === 'TRANSFER') {
+                  return (
+                    <TransferRow
+                      key={t.id}
+                      name={t.name}
+                      from={t.from ?? 'Origem'}
+                      to={t.to ?? 'Destino'}
+                      date={t.date}
+                      amount={t.amount}
+                      icon={t.icon}
+                      iconColor={t.iconColor}
+                      showDivider={!isLast}
+                    />
+                  )
+                }
+
                 return t.amount > 0 ? (
                   <IncomeRow key={t.id} {...props} />
                 ) : (

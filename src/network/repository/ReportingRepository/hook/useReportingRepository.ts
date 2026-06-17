@@ -1,11 +1,27 @@
 import { useQuery } from '@tanstack/react-query'
 import { Endpoints } from '../../../endpoints/endpoints.ts'
 import type { ReportingRepository } from '../ReportingRepository.ts'
-import type { CategoryBreakdownParams, CategoryBreakdownResponseDto } from '../dtos/index.ts'
+import type {
+  CategoryBreakdownParams,
+  CategoryBreakdownResponseDto,
+  StatementParams,
+  StatementResponseDto,
+} from '../dtos/index.ts'
 import type { RepositoryWithCache } from '../../RepositoryWithCache.ts'
 
 type ReportingRepositoryOpts = {
   getCategoryBreakdown: [{ params: CategoryBreakdownParams }]
+  getStatement: [{ params: StatementParams }]
+}
+
+async function fetchJson<T>(url: URL): Promise<T> {
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    throw new Error(`Request failed with status ${response.status}`)
+  }
+
+  return (await response.json()) as T
 }
 
 function buildQueryRepositoryReporting(method: keyof ReportingRepository, opts: unknown[]) {
@@ -23,8 +39,21 @@ function buildQueryRepositoryReporting(method: keyof ReportingRepository, opts: 
           if (params.categoriesId?.length) {
             url.searchParams.set('categoriesId', params.categoriesId.join(','))
           }
-          const response = await fetch(url)
-          return (await response.json()) as CategoryBreakdownResponseDto
+          return fetchJson<CategoryBreakdownResponseDto>(url)
+        },
+        enabled: !!params.startDate && !!params.endDate,
+      }
+    }
+    case 'getStatement': {
+      const { params } = opts[0] as { params: StatementParams }
+      return {
+        queryKey: ['reporting', 'statement', params],
+        queryFn: async () => {
+          const url = new URL(`${Endpoints.BASE_URL}/reporting/statement`)
+          url.searchParams.set('startDate', params.startDate)
+          url.searchParams.set('endDate', params.endDate)
+          if (params.accountId) url.searchParams.set('accountId', params.accountId)
+          return fetchJson<StatementResponseDto>(url)
         },
         enabled: !!params.startDate && !!params.endDate,
       }
@@ -34,7 +63,7 @@ function buildQueryRepositoryReporting(method: keyof ReportingRepository, opts: 
   }
 }
 
-export function useReportingRepository<K extends keyof ReportingRepository>(
+export function useReportingRepository<K extends keyof ReportingRepositoryOpts>(
   method: K,
   ...opts: ReportingRepositoryOpts[K]
 ): RepositoryWithCache<ReportingRepository>[K] {

@@ -1,20 +1,17 @@
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
-import Skeleton from '@mui/material/Skeleton'
 import Typography from '@mui/material/Typography'
 import { useTranslate } from '../../hooks/useTranslate.ts'
-import { useEstimatedBalance } from './hooks/useEstimatedBalance.ts'
 
 export interface CardAccountProps {
-  id: string
   name: string
   balance: number
+  estimatedBalance: number
 }
 
-export function CardAccount({ id, name, balance }: CardAccountProps) {
+export function CardAccount({ name, balance, estimatedBalance }: CardAccountProps) {
   const { formatMoney } = useTranslate()
-  const { estimatedBalance, isLoading } = useEstimatedBalance(id)
 
   return (
     <Card sx={{ width: '100%', cursor: 'pointer', '&:hover': { boxShadow: 3 } }}>
@@ -66,21 +63,9 @@ export function CardAccount({ id, name, balance }: CardAccountProps) {
               <Typography variant="caption" component="div" color="text.disabled">
                 Fim do mês
               </Typography>
-              {isLoading ? (
-                <Skeleton
-                  variant="text"
-                  width={88}
-                  sx={(t) => ({
-                    ...t.typography.amountSm,
-                    ml: 'auto',
-                    bgcolor: 'background.surfaceInset',
-                  })}
-                />
-              ) : (
-                <Typography variant="amountSm" component="div">
-                  {formatMoney(estimatedBalance, 'BRL')}
-                </Typography>
-              )}
+              <Typography variant="amountSm" component="div">
+                {formatMoney(estimatedBalance, 'BRL')}
+              </Typography>
             </Box>
           </Box>
         </Box>
