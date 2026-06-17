@@ -1,6 +1,4 @@
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import { useTranslate } from '../../hooks/useTranslate.ts'
 
@@ -14,62 +12,37 @@ export function CardAccount({ name, balance, estimatedBalance }: CardAccountProp
   const { formatMoney } = useTranslate()
 
   return (
-    <Card sx={{ width: '100%', cursor: 'pointer', '&:hover': { boxShadow: 3 } }}>
-      <CardContent sx={{ p: { xs: 4, sm: 5 } }}>
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: 'minmax(0, 1fr) 120px 140px' },
-            alignItems: { xs: 'stretch', sm: 'center' },
-            gap: { xs: 3, sm: 4 },
-          }}
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, py: 2 }}>
+      <Box
+        sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 3 }}
+      >
+        <Typography
+          variant="labelSm"
+          color="text.primary"
+          sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0 }}>
-            <Box
-              sx={(t) => ({
-                width: 8,
-                height: 8,
-                borderRadius: t.shape.rounded.circle,
-                bgcolor: 'primary.main',
-                flexShrink: 0,
-              })}
-            />
-            <Typography
-              variant="labelSm"
-              color="text.primary"
-              sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-            >
-              {name}
-            </Typography>
-          </Box>
+          {name}
+        </Typography>
+        <Typography variant="amountSm" component="div" sx={{ flexShrink: 0 }}>
+          {formatMoney(balance, 'BRL')}
+        </Typography>
+      </Box>
 
-          <Box
-            sx={{
-              display: { xs: 'grid', sm: 'contents' },
-              gridTemplateColumns: { xs: '1fr 1fr' },
-              gap: { xs: 3, sm: 0 },
-            }}
-          >
-            <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
-              <Typography variant="caption" component="div" color="text.disabled">
-                Atual
-              </Typography>
-              <Typography variant="amountSm" component="div">
-                {formatMoney(balance, 'BRL')}
-              </Typography>
-            </Box>
-
-            <Box sx={{ textAlign: 'right' }}>
-              <Typography variant="caption" component="div" color="text.disabled">
-                Fim do mês
-              </Typography>
-              <Typography variant="amountSm" component="div">
-                {formatMoney(estimatedBalance, 'BRL')}
-              </Typography>
-            </Box>
-          </Box>
-        </Box>
-      </CardContent>
-    </Card>
+      <Box
+        sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 3 }}
+      >
+        <Typography variant="caption" color="text.disabled">
+          Estimado
+        </Typography>
+        <Typography
+          variant="caption"
+          component="div"
+          color="text.disabled"
+          sx={{ flexShrink: 0, fontFeatureSettings: '"tnum" 1', fontWeight: 600 }}
+        >
+          {formatMoney(estimatedBalance, 'BRL')}
+        </Typography>
+      </Box>
+    </Box>
   )
 }
